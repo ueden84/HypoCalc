@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatRadioModule } from '@angular/material/radio';
 import { MortgageService } from '../../services/mortgage.service';
 import { MortgageRequest, MortgageResult } from '../../models/mortgage.model';
 
@@ -24,7 +25,8 @@ import { MortgageRequest, MortgageResult } from '../../models/mortgage.model';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    MatSliderModule
+    MatSliderModule,
+    MatRadioModule
   ],
   templateUrl: './mortgage-calculator.component.html',
   styleUrls: ['./mortgage-calculator.component.scss']
@@ -42,7 +44,9 @@ export class MortgageCalculatorComponent {
     this.mortgageForm = this.fb.group({
       principal: [2000000, [Validators.required, Validators.min(0), Validators.max(20000000)]],
       annualRatePercent: [5.0, [Validators.required, Validators.min(0), Validators.max(20)]],
-      years: [30, [Validators.required, Validators.min(1), Validators.max(30)]]
+      years: [30, [Validators.required, Validators.min(1), Validators.max(30)]],
+      offsetAmount: [0, [Validators.min(0)]],
+      offsetMode: ['reduceAmount']
     });
   }
 
@@ -88,29 +92,17 @@ export class MortgageCalculatorComponent {
     return this.formatCzechNumber(value);
   }
 
-  onInputChange(field: string, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = parseFloat(input.value);
-    if (!isNaN(value)) {
-      this.mortgageForm.get(field)?.setValue(value, { emitEvent: true });
-    }
-  }
-
   onInterestRateInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const rawValue = input.value;
     
-    // Allow typing including comma, dot, and numbers
     const numericValue = parseFloat(rawValue.replace(',', '.'));
     
     if (!isNaN(numericValue) && rawValue !== '') {
-      // Update form value (backend uses dot)
       this.mortgageForm.get('annualRatePercent')?.setValue(numericValue, { emitEvent: true });
     } else if (rawValue === '') {
-      // Empty field - set to null and emit event to trigger validation
       this.mortgageForm.get('annualRatePercent')?.setValue(null, { emitEvent: true });
     }
-    // For partial inputs like just ',' or '.', don't update form yet
   }
 
   onInterestRateBlur(): void {
@@ -141,6 +133,33 @@ export class MortgageCalculatorComponent {
     this.mortgageForm.get('years')?.markAsTouched();
   }
 
+  getOffsetDisplay(): string {
+    const value = this.mortgageForm.get('offsetAmount')?.value;
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+    return new Intl.NumberFormat('cs-CZ', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+
+  onOffsetInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const rawValue = input.value.replace(/\s/g, '').replace(',', '');
+    const numericValue = parseInt(rawValue, 10);
+    
+    if (!isNaN(numericValue) && rawValue !== '') {
+      this.mortgageForm.get('offsetAmount')?.setValue(numericValue, { emitEvent: true });
+    } else if (rawValue === '') {
+      this.mortgageForm.get('offsetAmount')?.setValue(0, { emitEvent: true });
+    }
+  }
+
+  onOffsetBlur(): void {
+    this.mortgageForm.get('offsetAmount')?.markAsTouched();
+  }
+
   getSliderValue(field: string): number {
     const value = this.mortgageForm.get(field)?.value;
     if (value === null || value === undefined || isNaN(value)) {
@@ -151,16 +170,6 @@ export class MortgageCalculatorComponent {
 
   onSliderChange(field: string, value: number): void {
     this.mortgageForm.get(field)?.setValue(value, { emitEvent: true });
-  }
-
-  onSliderNgModelChange(value: number, field: string): void {
-    if (!isNaN(value)) {
-      this.mortgageForm.get(field)?.setValue(value, { emitEvent: true });
-    }
-  }
-
-  formatSliderValue(value: number): string {
-    return this.formatCzechNumber(value);
   }
 
   onSubmit(): void {

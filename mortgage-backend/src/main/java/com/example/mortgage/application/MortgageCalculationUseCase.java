@@ -14,6 +14,11 @@ public class MortgageCalculationUseCase {
     }
     
     public MortgageResult execute(double principal, double annualRatePercent, int years) {
-        return calculatorService.calculate(principal, annualRatePercent, years);
+        return execute(principal, annualRatePercent, years, 0.0, "reduceAmount");
+    }
+    
+    public MortgageResult execute(double principal, double annualRatePercent, int years, 
+                                  double offsetAmount, String offsetMode) {
+        return calculatorService.calculate(principal, annualRatePercent, years, offsetAmount, offsetMode);
     }
 }

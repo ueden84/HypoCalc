@@ -15,5 +15,19 @@ public record MortgageRequest(
     
     @NotNull(message = "Years is required")
     @Min(value = 1, message = "Years must be greater than 0")
-    Integer years
-) {}
+    Integer years,
+    
+    @DecimalMin(value = "0.00", inclusive = true, message = "Offset amount cannot be negative")
+    Double offsetAmount,
+    
+    String offsetMode
+) {
+    public MortgageRequest {
+        if (offsetAmount == null) {
+            offsetAmount = 0.0;
+        }
+        if (offsetMode == null) {
+            offsetMode = "reduceAmount";
+        }
+    }
+}

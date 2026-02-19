@@ -66,6 +66,26 @@
         </mat-slider>
       </div>
 
+      <div class="field-container offset-section">
+        <h3>Offset Account</h3>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Offset Amount</mat-label>
+          <input matInput type="text" [value]="getOffsetDisplay()" placeholder="e.g., 100000" (input)="onOffsetInput($event)" (blur)="onOffsetBlur()">
+          <span matSuffix class="input-suffix">Kč</span>
+          <mat-error *ngIf="mortgageForm.get('offsetAmount')?.hasError('min')">
+            Offset amount cannot be negative
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="5000000" step="10000" discrete showTickMarks>
+          <input matSliderThumb formControlName="offsetAmount">
+        </mat-slider>
+
+        <mat-radio-group formControlName="offsetMode" class="offset-mode-group">
+          <mat-radio-button value="reduceAmount">Reduce principal amount</mat-radio-button>
+          <mat-radio-button value="reduceTerm">Reduce loan term</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
       <button mat-raised-button color="primary" type="submit" [disabled]="mortgageForm.invalid || loading" class="full-width">
         <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
         <span *ngIf="!loading">Calculate</span>
@@ -81,6 +101,14 @@
         <mat-card-title>Results</mat-card-title>
       </mat-card-header>
       <mat-card-content>
+        <div class="result-item" *ngIf="result.effectivePrincipal && result.effectivePrincipal !== result.monthlyPayment">
+          <span class="result-label">Effective Principal:</span>
+          <span class="result-value">{{ formatCurrency(result.effectivePrincipal) }}</span>
+        </div>
+        <div class="result-item" *ngIf="result.effectiveYears && result.effectiveYears > 0">
+          <span class="result-label">Effective Term:</span>
+          <span class="result-value">{{ result.effectiveYears }} years</span>
+        </div>
         <div class="result-item">
           <span class="result-label">Monthly Payment:</span>
           <span class="result-value">{{ formatCurrency(result.monthlyPayment) }}</span>

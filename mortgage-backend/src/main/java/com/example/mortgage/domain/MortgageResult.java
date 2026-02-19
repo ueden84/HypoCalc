@@ -3,7 +3,9 @@ package com.example.mortgage.domain;
 public record MortgageResult(
     double monthlyPayment,
     double totalPaid,
-    double totalInterest
+    double totalInterest,
+    double effectivePrincipal,
+    int effectiveYears
 ) {
     public MortgageResult {
         if (monthlyPayment < 0) {
@@ -15,5 +17,10 @@ public record MortgageResult(
         if (totalInterest < 0) {
             throw new IllegalArgumentException("Total interest cannot be negative");
         }
+    }
+    
+    // Constructor for backward compatibility
+    public MortgageResult(double monthlyPayment, double totalPaid, double totalInterest) {
+        this(monthlyPayment, totalPaid, totalInterest, 0.0, 0);
     }
 }

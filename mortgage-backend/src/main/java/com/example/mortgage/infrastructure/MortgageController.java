@@ -22,13 +22,17 @@ public class MortgageController {
         MortgageResult result = useCase.execute(
             request.principal(),
             request.annualRatePercent(),
-            request.years()
+            request.years(),
+            request.offsetAmount(),
+            request.offsetMode()
         );
         
         MortgageResponse response = new MortgageResponse(
             result.monthlyPayment(),
             result.totalPaid(),
-            result.totalInterest()
+            result.totalInterest(),
+            result.effectivePrincipal(),
+            result.effectiveYears()
         );
         
         return ResponseEntity.ok(response);
