@@ -1,0 +1,75 @@
+<mat-card class="calculator-card">
+  <mat-card-header>
+    <mat-card-title>Mortgage Calculator</mat-card-title>
+    <mat-card-subtitle>Calculate your monthly mortgage payments</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="mortgageForm" (ngSubmit)="onSubmit()" class="calculator-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Principal Amount</mat-label>
+        <input matInput type="number" formControlName="principal" placeholder="e.g., 300000">
+        <span matPrefix>$&nbsp;</span>
+        <mat-error *ngIf="mortgageForm.get('principal')?.hasError('required')">
+          Principal is required
+        </mat-error>
+        <mat-error *ngIf="mortgageForm.get('principal')?.hasError('min')">
+          Principal must be greater than 0
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Annual Interest Rate (%)</mat-label>
+        <input matInput type="number" formControlName="annualRatePercent" placeholder="e.g., 5.0" step="0.01">
+        <span matSuffix>%</span>
+        <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('required')">
+          Interest rate is required
+        </mat-error>
+        <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('min')">
+          Interest rate cannot be negative
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Loan Term (Years)</mat-label>
+        <input matInput type="number" formControlName="years" placeholder="e.g., 30">
+        <span matSuffix>years</span>
+        <mat-error *ngIf="mortgageForm.get('years')?.hasError('required')">
+          Years is required
+        </mat-error>
+        <mat-error *ngIf="mortgageForm.get('years')?.hasError('min')">
+          Years must be greater than 0
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="mortgageForm.invalid || loading" class="full-width">
+        <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
+        <span *ngIf="!loading">Calculate</span>
+      </button>
+    </form>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <mat-card *ngIf="result" class="results-card">
+      <mat-card-header>
+        <mat-card-title>Results</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="result-item">
+          <span class="result-label">Monthly Payment:</span>
+          <span class="result-value">{{ formatCurrency(result.monthlyPayment) }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Total Paid:</span>
+          <span class="result-value">{{ formatCurrency(result.totalPaid) }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Total Interest:</span>
+          <span class="result-value">{{ formatCurrency(result.totalInterest) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-card-content>
+</mat-card>

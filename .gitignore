@@ -1,0 +1,99 @@
+############################################################
+# ROOT-LEVEL IGNORE
+############################################################
+
+# Logs
+*.log
+logs/
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+############################################################
+# BACKEND — SPRING BOOT (mortgage-backend)
+############################################################
+
+mortgage-backend/target/
+mortgage-backend/.mvn/
+mortgage-backend/mvnw
+mortgage-backend/mvnw.cmd
+
+# IntelliJ
+mortgage-backend/.idea/
+mortgage-backend/*.iml
+
+# Eclipse
+mortgage-backend/.classpath
+mortgage-backend/.project
+mortgage-backend/.settings/
+
+# VS Code
+mortgage-backend/.vscode/
+
+############################################################
+# FRONTEND — ANGULAR (mortgage-frontend)
+############################################################
+
+# Node modules
+mortgage-frontend/node_modules/
+
+# Angular build output
+mortgage-frontend/dist/
+mortgage-frontend/.angular/
+mortgage-frontend/.cache/
+
+# Angular environment files (optional)
+mortgage-frontend/src/environments/*.local.ts
+
+# NPM logs
+mortgage-frontend/npm-debug.log
+mortgage-frontend/yarn-debug.log
+mortgage-frontend/yarn-error.log
+mortgage-frontend/package-lock.json
+
+# IDEs
+mortgage-frontend/.idea/
+mortgage-frontend/*.iml
+mortgage-frontend/.vscode/
+
+############################################################
+# DOCKER
+############################################################
+
+# Docker build artifacts
+**/docker/*.pid
+**/docker/tmp/
+
+############################################################
+# GENERAL IDE / EDITOR FILES
+############################################################
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+############################################################
+# MISC
+############################################################
+
+# Temporary files
+*.swp
+*.swo
+*.bak
+*.old
+
