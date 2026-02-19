@@ -100,3 +100,8 @@ ng test --watch=false      # Run tests once
 - **Backend**: Java 21, Spring Boot 3.2, Maven, JUnit 5
 - **Frontend**: Angular 17, TypeScript, Angular Material
 - **Infrastructure**: Docker, Docker Compose
+
+## Functional requirements
+- currency is CZK
+- values cannot be negative
+- use czech format for numbers

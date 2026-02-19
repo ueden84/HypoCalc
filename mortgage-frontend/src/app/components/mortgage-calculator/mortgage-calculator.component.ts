@@ -65,9 +65,9 @@ export class MortgageCalculatorComponent {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('cs-CZ', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'CZK'
     }).format(value);
   }
 }
