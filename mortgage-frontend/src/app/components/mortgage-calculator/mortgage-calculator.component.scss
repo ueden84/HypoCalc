@@ -62,3 +62,13 @@
 .input-suffix {
   padding-right: 12px;
 }
+
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+mat-slider {
+  margin-top: -8px;
+}

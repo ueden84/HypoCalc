@@ -6,41 +6,65 @@
 
   <mat-card-content>
     <form [formGroup]="mortgageForm" (ngSubmit)="onSubmit()" class="calculator-form">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Principal Amount</mat-label>
-        <input matInput type="number" formControlName="principal" placeholder="e.g., 3000000" min="0">
-        <span matSuffix class="input-suffix">Kč</span>
-        <mat-error *ngIf="mortgageForm.get('principal')?.hasError('required')">
-          Principal is required
-        </mat-error>
-        <mat-error *ngIf="mortgageForm.get('principal')?.hasError('min')">
-          Principal must be greater than 0
-        </mat-error>
-      </mat-form-field>
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Principal Amount</mat-label>
+          <input matInput type="text" [value]="getPrincipalDisplay()" placeholder="e.g., 3000000" (input)="onPrincipalInput($event)" (blur)="onPrincipalBlur()">
+          <span matSuffix class="input-suffix">Kč</span>
+          <mat-error *ngIf="mortgageForm.get('principal')?.hasError('required') && mortgageForm.get('principal')?.touched">
+            Principal is required
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('principal')?.hasError('min')">
+            Principal must be at least 0
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('principal')?.hasError('max')">
+            Principal cannot exceed 20,000,000 Kč
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="20000000" step="10000" discrete showTickMarks>
+          <input matSliderThumb formControlName="principal">
+        </mat-slider>
+      </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Annual Interest Rate (%)</mat-label>
-        <input matInput type="number" formControlName="annualRatePercent" placeholder="e.g., 5.0" step="0.01" min="0">
-        <span matSuffix class="input-suffix">%</span>
-        <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('required')">
-          Interest rate is required
-        </mat-error>
-        <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('min')">
-          Interest rate cannot be negative
-        </mat-error>
-      </mat-form-field>
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Annual Interest Rate (%)</mat-label>
+          <input matInput type="text" [value]="getInterestRateDisplay()" placeholder="např. 4,79" (input)="onInterestRateInput($event)" (blur)="onInterestRateBlur()">
+          <span matSuffix class="input-suffix">%</span>
+          <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('required') && mortgageForm.get('annualRatePercent')?.touched">
+            Interest rate is required
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('min')">
+            Interest rate cannot be negative
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('max')">
+            Interest rate cannot exceed 20%
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="20" step="0.01" discrete showTickMarks>
+          <input matSliderThumb formControlName="annualRatePercent">
+        </mat-slider>
+      </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Loan Term (Years)</mat-label>
-        <input matInput type="number" formControlName="years" placeholder="e.g., 30" min="0">
-        <span matSuffix class="input-suffix">years</span>
-        <mat-error *ngIf="mortgageForm.get('years')?.hasError('required')">
-          Years is required
-        </mat-error>
-        <mat-error *ngIf="mortgageForm.get('years')?.hasError('min')">
-          Years must be greater than 0
-        </mat-error>
-      </mat-form-field>
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Loan Term (Years)</mat-label>
+          <input matInput type="text" [value]="getYearsDisplay()" placeholder="e.g., 30" (input)="onYearsInput($event)" (blur)="onYearsBlur()">
+          <span matSuffix class="input-suffix">years</span>
+          <mat-error *ngIf="mortgageForm.get('years')?.hasError('required') && mortgageForm.get('years')?.touched">
+            Years is required
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('years')?.hasError('min')">
+            Minimum loan term is 1 year
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('years')?.hasError('max')">
+            Maximum loan term is 30 years
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="1" max="30" step="1" discrete showTickMarks>
+          <input matSliderThumb formControlName="years">
+        </mat-slider>
+      </div>
 
       <button mat-raised-button color="primary" type="submit" [disabled]="mortgageForm.invalid || loading" class="full-width">
         <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
