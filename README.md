@@ -105,3 +105,4 @@ ng test --watch=false      # Run tests once
 - currency is CZK
 - values cannot be negative
 - use czech format for numbers
+- sliders are present to set the value

@@ -3,6 +3,7 @@ package com.example.mortgage.infrastructure;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.AssertTrue;
 
 public record MortgageRequest(
     @NotNull(message = "Principal is required")
@@ -29,5 +30,10 @@ public record MortgageRequest(
         if (offsetMode == null) {
             offsetMode = "reduceAmount";
         }
+    }
+    
+    @AssertTrue(message = "Offset amount cannot exceed principal amount")
+    public boolean isOffsetAmountValid() {
+        return offsetAmount == null || offsetAmount <= principal;
     }
 }

@@ -21,9 +21,9 @@
             Principal cannot exceed 20,000,000 Kč
           </mat-error>
         </mat-form-field>
-        <mat-slider class="full-width" min="0" max="20000000" step="10000" discrete showTickMarks>
-          <input matSliderThumb formControlName="principal">
-        </mat-slider>
+          <mat-slider class="full-width" min="0" max="20000000" step="10000" discrete showTickMarks>
+            <input matSliderThumb formControlName="principal">
+          </mat-slider>
       </div>
 
       <div class="field-container">
@@ -41,9 +41,9 @@
             Interest rate cannot exceed 20%
           </mat-error>
         </mat-form-field>
-        <mat-slider class="full-width" min="0" max="20" step="0.01" discrete showTickMarks>
-          <input matSliderThumb formControlName="annualRatePercent">
-        </mat-slider>
+          <mat-slider class="full-width" min="0" max="20" step="0.01" discrete showTickMarks>
+            <input matSliderThumb formControlName="annualRatePercent">
+          </mat-slider>
       </div>
 
       <div class="field-container">
@@ -61,9 +61,9 @@
             Maximum loan term is 30 years
           </mat-error>
         </mat-form-field>
-        <mat-slider class="full-width" min="1" max="30" step="1" discrete showTickMarks>
-          <input matSliderThumb formControlName="years">
-        </mat-slider>
+          <mat-slider class="full-width" min="1" max="30" step="1" discrete showTickMarks>
+            <input matSliderThumb formControlName="years">
+          </mat-slider>
       </div>
 
       <div class="field-container offset-section">
@@ -75,8 +75,11 @@
           <mat-error *ngIf="mortgageForm.get('offsetAmount')?.hasError('min')">
             Offset amount cannot be negative
           </mat-error>
+          <mat-error *ngIf="mortgageForm.get('offsetAmount')?.hasError('max')">
+            Offset amount cannot exceed principal
+          </mat-error>
         </mat-form-field>
-        <mat-slider class="full-width" min="0" max="5000000" step="10000" discrete showTickMarks>
+        <mat-slider class="full-width" min="0" [max]="getOffsetMax()" step="10000" discrete showTickMarks>
           <input matSliderThumb formControlName="offsetAmount">
         </mat-slider>
 
@@ -96,7 +99,7 @@
       {{ error }}
     </div>
 
-    <mat-card *ngIf="result" class="results-card">
+    <mat-card *ngIf="result" class="results-card" id="results-section">
       <mat-card-header>
         <mat-card-title>Results</mat-card-title>
       </mat-card-header>

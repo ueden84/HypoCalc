@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,7 +31,7 @@ import { MortgageRequest, MortgageResult } from '../../models/mortgage.model';
   templateUrl: './mortgage-calculator.component.html',
   styleUrls: ['./mortgage-calculator.component.scss']
 })
-export class MortgageCalculatorComponent {
+export class MortgageCalculatorComponent implements OnInit {
   mortgageForm: FormGroup;
   result: MortgageResult | null = null;
   loading = false;
@@ -45,9 +45,39 @@ export class MortgageCalculatorComponent {
       principal: [2000000, [Validators.required, Validators.min(0), Validators.max(20000000)]],
       annualRatePercent: [5.0, [Validators.required, Validators.min(0), Validators.max(20)]],
       years: [30, [Validators.required, Validators.min(1), Validators.max(30)]],
-      offsetAmount: [0, [Validators.min(0)]],
+      offsetAmount: [0, [Validators.min(0), this.offsetValidator.bind(this)]],
       offsetMode: ['reduceAmount']
     });
+  }
+
+  ngOnInit(): void {
+    // Watch for principal changes and adjust offset if needed
+    this.mortgageForm.get('principal')?.valueChanges.subscribe((principal) => {
+      const offsetControl = this.mortgageForm.get('offsetAmount');
+      const currentOffset = offsetControl?.value;
+      if (principal && currentOffset > principal) {
+        offsetControl?.setValue(principal, { emitEvent: false });
+      }
+    });
+
+
+  }
+
+  offsetValidator(control: AbstractControl): ValidationErrors | null {
+    const offset = control.value;
+    const principal = this.mortgageForm?.get('principal')?.value;
+    if (offset && principal && offset > principal) {
+      return { max: true };
+    }
+    return null;
+  }
+
+  getOffsetMax(): number {
+    const principal = this.mortgageForm.get('principal')?.value;
+    if (principal && principal > 0) {
+      return Math.min(principal, 20000000);
+    }
+    return 20000000;
   }
 
   formatCzechNumber(value: number): string {
@@ -176,6 +206,7 @@ export class MortgageCalculatorComponent {
     if (this.mortgageForm.valid) {
       this.loading = true;
       this.error = null;
+      const hadPreviousResult = this.result !== null;
       this.result = null;
 
       const request: MortgageRequest = this.mortgageForm.value;
@@ -184,6 +215,15 @@ export class MortgageCalculatorComponent {
         next: (result) => {
           this.result = result;
           this.loading = false;
+          // Only scroll to results on first calculation, not when recalculating
+          if (!hadPreviousResult) {
+            setTimeout(() => {
+              const resultsElement = document.getElementById('results-section');
+              if (resultsElement) {
+                resultsElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
+          }
         },
         error: (err) => {
           this.error = err.error?.error || 'An error occurred while calculating';
