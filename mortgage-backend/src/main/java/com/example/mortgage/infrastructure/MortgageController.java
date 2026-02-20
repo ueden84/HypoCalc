@@ -24,7 +24,8 @@ public class MortgageController {
             request.annualRatePercent(),
             request.years(),
             request.offsetAmount(),
-            request.offsetMode()
+            request.offsetMode(),
+            request.offsetRatePercent()
         );
         
         MortgageResponse response = new MortgageResponse(
@@ -32,7 +33,8 @@ public class MortgageController {
             result.totalPaid(),
             result.totalInterest(),
             result.effectivePrincipal(),
-            result.effectiveYears()
+            result.effectiveYears(),
+            result.totalOffsetInterestEarned()
         );
         
         return ResponseEntity.ok(response);

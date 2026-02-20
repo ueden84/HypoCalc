@@ -5,7 +5,8 @@ public record MortgageResult(
     double totalPaid,
     double totalInterest,
     double effectivePrincipal,
-    int effectiveYears
+    int effectiveYears,
+    double totalOffsetInterestEarned
 ) {
     public MortgageResult {
         if (monthlyPayment < 0) {
@@ -17,10 +18,16 @@ public record MortgageResult(
         if (totalInterest < 0) {
             throw new IllegalArgumentException("Total interest cannot be negative");
         }
+        if (totalOffsetInterestEarned < 0) {
+            throw new IllegalArgumentException("Total offset interest earned cannot be negative");
+        }
     }
     
-    // Constructor for backward compatibility
     public MortgageResult(double monthlyPayment, double totalPaid, double totalInterest) {
-        this(monthlyPayment, totalPaid, totalInterest, 0.0, 0);
+        this(monthlyPayment, totalPaid, totalInterest, 0.0, 0, 0.0);
+    }
+    
+    public MortgageResult(double monthlyPayment, double totalPaid, double totalInterest, double effectivePrincipal, int effectiveYears) {
+        this(monthlyPayment, totalPaid, totalInterest, effectivePrincipal, effectiveYears, 0.0);
     }
 }

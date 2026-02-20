@@ -4,6 +4,7 @@ export interface MortgageRequest {
   years: number;
   offsetAmount?: number;
   offsetMode?: 'reduceAmount' | 'reduceTerm';
+  offsetRatePercent?: number;
 }
 
 export interface MortgageResult {
@@ -12,4 +13,5 @@ export interface MortgageResult {
   totalInterest: number;
   effectivePrincipal?: number;
   effectiveYears?: number;
+  totalOffsetInterestEarned?: number;
 }

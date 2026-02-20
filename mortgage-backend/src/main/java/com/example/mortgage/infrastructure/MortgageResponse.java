@@ -5,10 +5,14 @@ public record MortgageResponse(
     double totalPaid,
     double totalInterest,
     double effectivePrincipal,
-    int effectiveYears
+    int effectiveYears,
+    double totalOffsetInterestEarned
 ) {
-    // Constructor for backward compatibility
     public MortgageResponse(double monthlyPayment, double totalPaid, double totalInterest) {
-        this(monthlyPayment, totalPaid, totalInterest, 0.0, 0);
+        this(monthlyPayment, totalPaid, totalInterest, 0.0, 0, 0.0);
+    }
+    
+    public MortgageResponse(double monthlyPayment, double totalPaid, double totalInterest, double effectivePrincipal, int effectiveYears) {
+        this(monthlyPayment, totalPaid, totalInterest, effectivePrincipal, effectiveYears, 0.0);
     }
 }

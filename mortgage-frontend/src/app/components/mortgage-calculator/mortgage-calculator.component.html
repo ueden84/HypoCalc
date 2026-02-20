@@ -83,6 +83,24 @@
           <input matSliderThumb formControlName="offsetAmount">
         </mat-slider>
 
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Offset Account Interest Rate (%)</mat-label>
+          <input matInput type="text" [value]="getOffsetRateDisplay()" placeholder="e.g., 3.5" (input)="onOffsetRateInput($event)" (blur)="onOffsetRateBlur()">
+          <span matSuffix class="input-suffix">%</span>
+          <mat-error *ngIf="mortgageForm.get('offsetRatePercent')?.hasError('min')">
+            Offset rate cannot be negative
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('offsetRatePercent')?.hasError('maxRate')">
+            Offset rate cannot exceed 20%
+          </mat-error>
+          <mat-error *ngIf="mortgageForm.get('offsetRatePercent')?.hasError('minRate')">
+            Offset rate must be >= annual interest rate
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="20" step="0.01" discrete showTickMarks>
+          <input matSliderThumb formControlName="offsetRatePercent">
+        </mat-slider>
+
         <mat-radio-group formControlName="offsetMode" class="offset-mode-group">
           <mat-radio-button value="reduceAmount">Reduce principal amount</mat-radio-button>
           <mat-radio-button value="reduceTerm">Reduce loan term</mat-radio-button>
@@ -123,6 +141,10 @@
         <div class="result-item">
           <span class="result-label">Total Interest:</span>
           <span class="result-value">{{ formatCurrency(result.totalInterest) }}</span>
+        </div>
+        <div class="result-item" *ngIf="result.totalOffsetInterestEarned && result.totalOffsetInterestEarned > 0">
+          <span class="result-label">Offset Interest Earned:</span>
+          <span class="result-value">{{ formatCurrency(result.totalOffsetInterestEarned) }}</span>
         </div>
       </mat-card-content>
     </mat-card>

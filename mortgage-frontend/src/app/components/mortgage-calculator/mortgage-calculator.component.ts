@@ -46,12 +46,12 @@ export class MortgageCalculatorComponent implements OnInit {
       annualRatePercent: [5.0, [Validators.required, Validators.min(0), Validators.max(20)]],
       years: [30, [Validators.required, Validators.min(1), Validators.max(30)]],
       offsetAmount: [0, [Validators.min(0), this.offsetValidator.bind(this)]],
-      offsetMode: ['reduceAmount']
+      offsetMode: ['reduceAmount'],
+      offsetRatePercent: [0, [Validators.min(0), Validators.max(20), this.offsetRateValidator.bind(this)]]
     });
   }
 
   ngOnInit(): void {
-    // Watch for principal changes and adjust offset if needed
     this.mortgageForm.get('principal')?.valueChanges.subscribe((principal) => {
       const offsetControl = this.mortgageForm.get('offsetAmount');
       const currentOffset = offsetControl?.value;
@@ -60,7 +60,12 @@ export class MortgageCalculatorComponent implements OnInit {
       }
     });
 
-
+    this.mortgageForm.get('annualRatePercent')?.valueChanges.subscribe((annualRate) => {
+      const offsetRateControl = this.mortgageForm.get('offsetRatePercent');
+      if (offsetRateControl) {
+        offsetRateControl.updateValueAndValidity({ emitEvent: false });
+      }
+    });
   }
 
   offsetValidator(control: AbstractControl): ValidationErrors | null {
@@ -68,6 +73,17 @@ export class MortgageCalculatorComponent implements OnInit {
     const principal = this.mortgageForm?.get('principal')?.value;
     if (offset && principal && offset > principal) {
       return { max: true };
+    }
+    return null;
+  }
+
+  offsetRateValidator(control: AbstractControl): ValidationErrors | null {
+    const offsetRate = control.value;
+    const annualRate = this.mortgageForm?.get('annualRatePercent')?.value;
+    if (offsetRate !== null && offsetRate !== undefined && annualRate !== null && annualRate !== undefined) {
+      if (offsetRate < annualRate) {
+        return { minRate: true };
+      }
     }
     return null;
   }
@@ -188,6 +204,31 @@ export class MortgageCalculatorComponent implements OnInit {
 
   onOffsetBlur(): void {
     this.mortgageForm.get('offsetAmount')?.markAsTouched();
+  }
+
+  getOffsetRateDisplay(): string {
+    const value = this.mortgageForm.get('offsetRatePercent')?.value;
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+    return this.formatCzechNumber(value);
+  }
+
+  onOffsetRateInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const rawValue = input.value;
+    
+    const numericValue = parseFloat(rawValue.replace(',', '.'));
+    
+    if (!isNaN(numericValue) && rawValue !== '') {
+      this.mortgageForm.get('offsetRatePercent')?.setValue(numericValue, { emitEvent: true });
+    } else if (rawValue === '') {
+      this.mortgageForm.get('offsetRatePercent')?.setValue(0, { emitEvent: true });
+    }
+  }
+
+  onOffsetRateBlur(): void {
+    this.mortgageForm.get('offsetRatePercent')?.markAsTouched();
   }
 
   getSliderValue(field: string): number {

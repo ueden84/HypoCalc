@@ -21,7 +21,10 @@ public record MortgageRequest(
     @DecimalMin(value = "0.00", inclusive = true, message = "Offset amount cannot be negative")
     Double offsetAmount,
     
-    String offsetMode
+    String offsetMode,
+    
+    @DecimalMin(value = "0.00", inclusive = true, message = "Offset rate cannot be negative")
+    Double offsetRatePercent
 ) {
     public MortgageRequest {
         if (offsetAmount == null) {
@@ -30,10 +33,21 @@ public record MortgageRequest(
         if (offsetMode == null) {
             offsetMode = "reduceAmount";
         }
+        if (offsetRatePercent == null) {
+            offsetRatePercent = 0.0;
+        }
     }
     
     @AssertTrue(message = "Offset amount cannot exceed principal amount")
     public boolean isOffsetAmountValid() {
         return offsetAmount == null || offsetAmount <= principal;
+    }
+    
+    @AssertTrue(message = "Offset rate must be greater than or equal to annual rate")
+    public boolean isOffsetRateValid() {
+        if (offsetRatePercent == null || offsetAmount == null || offsetAmount <= 0) {
+            return true;
+        }
+        return offsetRatePercent >= annualRatePercent;
     }
 }

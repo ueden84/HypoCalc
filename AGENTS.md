@@ -305,3 +305,19 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed
 - **Frontend**: Avoid additional UI libraries (Angular Material is sufficient)
+
+#  Sample calculation:
+- principal amount: 4 000 000
+- annual interest rate: 4,79
+- loan term: 25
+- total interest: 2 869 045,3
+Using offset
+- offset amount: 1 000 000
+- offset interest rate: 4,79
+- offset optionm: reduce principal amount
+- effective principal: 3 000 000
+- monthly payment: 17 172,61
+- total paid with offset: 5 151 783,98
+- total interest paid without offset: 2 869 045,3
+- total interest with offset: 1 197 500 + 954 283,98 = 2 151 783,98
+- offset interest earned: 2 869 045,3 - 2 151 783,98 = 717 261,32
