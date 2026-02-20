@@ -56,7 +56,6 @@ mortgage-frontend/src/environments/*.local.ts
 mortgage-frontend/npm-debug.log
 mortgage-frontend/yarn-debug.log
 mortgage-frontend/yarn-error.log
-mortgage-frontend/package-lock.json
 
 # IDEs
 mortgage-frontend/.idea/
