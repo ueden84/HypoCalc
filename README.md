@@ -1,4 +1,5 @@
 # Mortgage Calculator
+![Build Status](https://github.com/ueden84/HypoCalc/actions/workflows/build.yml/badge.svg)
 
 A full-stack mortgage calculator application with Spring Boot backend and Angular 17 frontend.
 

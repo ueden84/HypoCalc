@@ -1,0 +1,49 @@
+name: Build Full Stack Project
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+
+jobs:
+  backend:
+    name: Build Spring Boot Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build backend with Maven
+        working-directory: mortgage-backend
+        run: mvn -B clean verify
+
+  frontend:
+    name: Build Angular Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: mortgage-frontend
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: mortgage-frontend
+        run: npm run build --if-present
