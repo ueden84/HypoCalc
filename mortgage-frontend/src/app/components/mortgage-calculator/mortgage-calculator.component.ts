@@ -41,13 +41,14 @@ export class MortgageCalculatorComponent implements OnInit {
     private fb: FormBuilder,
     private mortgageService: MortgageService
   ) {
+    const initialAnnualRate = 5.0;
     this.mortgageForm = this.fb.group({
       principal: [2000000, [Validators.required, Validators.min(0), Validators.max(20000000)]],
-      annualRatePercent: [5.0, [Validators.required, Validators.min(0), Validators.max(20)]],
+      annualRatePercent: [initialAnnualRate, [Validators.required, Validators.min(0), Validators.max(20)]],
       years: [30, [Validators.required, Validators.min(1), Validators.max(30)]],
       offsetAmount: [0, [Validators.min(0), this.offsetValidator.bind(this)]],
       offsetMode: ['reduceAmount'],
-      offsetRatePercent: [0, [Validators.min(0), Validators.max(20), this.offsetRateValidator.bind(this)]]
+      offsetRatePercent: [initialAnnualRate, [Validators.min(0), Validators.max(20), this.offsetRateValidator.bind(this)]]
     });
   }
 
@@ -96,6 +97,18 @@ export class MortgageCalculatorComponent implements OnInit {
     return 20000000;
   }
 
+  getOffsetRateMin(): number {
+    const annualRate = this.mortgageForm.get('annualRatePercent')?.value;
+    if (annualRate !== null && annualRate !== undefined) {
+      return annualRate;
+    }
+    return 0;
+  }
+
+  isInvalidNumber(value: any): boolean {
+    return typeof value === 'string' && value !== '';
+  }
+
   formatCzechNumber(value: number): string {
     return new Intl.NumberFormat('cs-CZ', {
       minimumFractionDigits: 0,
@@ -108,6 +121,9 @@ export class MortgageCalculatorComponent implements OnInit {
     if (value === null || value === undefined || value === '') {
       return '';
     }
+    if (typeof value === 'string') {
+      return value;
+    }
     return new Intl.NumberFormat('cs-CZ', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
@@ -117,17 +133,25 @@ export class MortgageCalculatorComponent implements OnInit {
   onPrincipalInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const rawValue = input.value.replace(/\s/g, '').replace(',', '');
-    const numericValue = parseInt(rawValue, 10);
     
-    if (!isNaN(numericValue) && rawValue !== '') {
-      this.mortgageForm.get('principal')?.setValue(numericValue, { emitEvent: true });
-    } else if (rawValue === '') {
+    if (rawValue === '') {
       this.mortgageForm.get('principal')?.setValue(null, { emitEvent: true });
+    } else if (/^\d+$/.test(rawValue)) {
+      this.mortgageForm.get('principal')?.setValue(parseInt(rawValue, 10), { emitEvent: true });
+    } else {
+      this.mortgageForm.get('principal')?.setValue(rawValue, { emitEvent: true });
     }
+    this.mortgageForm.get('principal')?.updateValueAndValidity({ emitEvent: true });
   }
 
   onPrincipalBlur(): void {
-    this.mortgageForm.get('principal')?.markAsTouched();
+    const control = this.mortgageForm.get('principal');
+    control?.markAsTouched();
+    const value = control?.value;
+    if (value === null || value === undefined || isNaN(Number(value)) || typeof value === 'string') {
+      control?.setValue(0);
+    }
+    control?.updateValueAndValidity({ emitEvent: true });
   }
 
   getInterestRateDisplay(): string {
@@ -135,24 +159,34 @@ export class MortgageCalculatorComponent implements OnInit {
     if (value === null || value === undefined || value === '') {
       return '';
     }
+    if (typeof value === 'string') {
+      return value;
+    }
     return this.formatCzechNumber(value);
   }
 
   onInterestRateInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const rawValue = input.value;
+    const rawValue = input.value.replace(',', '.');
     
-    const numericValue = parseFloat(rawValue.replace(',', '.'));
-    
-    if (!isNaN(numericValue) && rawValue !== '') {
-      this.mortgageForm.get('annualRatePercent')?.setValue(numericValue, { emitEvent: true });
-    } else if (rawValue === '') {
+    if (rawValue === '') {
       this.mortgageForm.get('annualRatePercent')?.setValue(null, { emitEvent: true });
+    } else if (/^\d*\.?\d+$/.test(rawValue)) {
+      this.mortgageForm.get('annualRatePercent')?.setValue(parseFloat(rawValue), { emitEvent: true });
+    } else {
+      this.mortgageForm.get('annualRatePercent')?.setValue(rawValue, { emitEvent: true });
     }
+    this.mortgageForm.get('annualRatePercent')?.updateValueAndValidity({ emitEvent: true });
   }
 
   onInterestRateBlur(): void {
-    this.mortgageForm.get('annualRatePercent')?.markAsTouched();
+    const control = this.mortgageForm.get('annualRatePercent');
+    control?.markAsTouched();
+    const value = control?.value;
+    if (value === null || value === undefined || isNaN(Number(value)) || typeof value === 'string') {
+      control?.setValue(0);
+    }
+    control?.updateValueAndValidity({ emitEvent: true });
   }
 
   getYearsDisplay(): string {
@@ -160,29 +194,43 @@ export class MortgageCalculatorComponent implements OnInit {
     if (value === null || value === undefined || value === '') {
       return '';
     }
+    if (typeof value === 'string') {
+      return value;
+    }
     return value.toString();
   }
 
   onYearsInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const rawValue = input.value;
-    const numericValue = parseInt(rawValue, 10);
     
-    if (!isNaN(numericValue) && rawValue !== '') {
-      this.mortgageForm.get('years')?.setValue(numericValue, { emitEvent: true });
-    } else if (rawValue === '') {
+    if (rawValue === '') {
       this.mortgageForm.get('years')?.setValue(null, { emitEvent: true });
+    } else if (/^\d+$/.test(rawValue)) {
+      this.mortgageForm.get('years')?.setValue(parseInt(rawValue, 10), { emitEvent: true });
+    } else {
+      this.mortgageForm.get('years')?.setValue(rawValue, { emitEvent: true });
     }
+    this.mortgageForm.get('years')?.updateValueAndValidity({ emitEvent: true });
   }
 
   onYearsBlur(): void {
-    this.mortgageForm.get('years')?.markAsTouched();
+    const control = this.mortgageForm.get('years');
+    control?.markAsTouched();
+    const value = control?.value;
+    if (value === null || value === undefined || isNaN(Number(value)) || typeof value === 'string') {
+      control?.setValue(1);
+    }
+    control?.updateValueAndValidity({ emitEvent: true });
   }
 
   getOffsetDisplay(): string {
     const value = this.mortgageForm.get('offsetAmount')?.value;
     if (value === null || value === undefined || value === '') {
       return '';
+    }
+    if (typeof value === 'string') {
+      return value;
     }
     return new Intl.NumberFormat('cs-CZ', {
       minimumFractionDigits: 0,
@@ -193,17 +241,25 @@ export class MortgageCalculatorComponent implements OnInit {
   onOffsetInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const rawValue = input.value.replace(/\s/g, '').replace(',', '');
-    const numericValue = parseInt(rawValue, 10);
     
-    if (!isNaN(numericValue) && rawValue !== '') {
-      this.mortgageForm.get('offsetAmount')?.setValue(numericValue, { emitEvent: true });
-    } else if (rawValue === '') {
-      this.mortgageForm.get('offsetAmount')?.setValue(0, { emitEvent: true });
+    if (rawValue === '') {
+      this.mortgageForm.get('offsetAmount')?.setValue(null, { emitEvent: true });
+    } else if (/^\d+$/.test(rawValue)) {
+      this.mortgageForm.get('offsetAmount')?.setValue(parseInt(rawValue, 10), { emitEvent: true });
+    } else {
+      this.mortgageForm.get('offsetAmount')?.setValue(rawValue, { emitEvent: true });
     }
+    this.mortgageForm.get('offsetAmount')?.updateValueAndValidity({ emitEvent: true });
   }
 
   onOffsetBlur(): void {
-    this.mortgageForm.get('offsetAmount')?.markAsTouched();
+    const control = this.mortgageForm.get('offsetAmount');
+    control?.markAsTouched();
+    const value = control?.value;
+    if (value === null || value === undefined || isNaN(Number(value)) || typeof value === 'string') {
+      control?.setValue(0);
+    }
+    control?.updateValueAndValidity({ emitEvent: true });
   }
 
   getOffsetRateDisplay(): string {
@@ -211,24 +267,38 @@ export class MortgageCalculatorComponent implements OnInit {
     if (value === null || value === undefined || value === '') {
       return '';
     }
+    if (typeof value === 'string') {
+      return value;
+    }
     return this.formatCzechNumber(value);
   }
 
   onOffsetRateInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const rawValue = input.value;
+    const rawValue = input.value.replace(',', '.');
+    const annualRate = this.mortgageForm.get('annualRatePercent')?.value;
     
-    const numericValue = parseFloat(rawValue.replace(',', '.'));
-    
-    if (!isNaN(numericValue) && rawValue !== '') {
-      this.mortgageForm.get('offsetRatePercent')?.setValue(numericValue, { emitEvent: true });
-    } else if (rawValue === '') {
-      this.mortgageForm.get('offsetRatePercent')?.setValue(0, { emitEvent: true });
+    if (rawValue === '') {
+      this.mortgageForm.get('offsetRatePercent')?.setValue(annualRate || 0, { emitEvent: true });
+    } else if (/^\d*\.?\d+$/.test(rawValue)) {
+      this.mortgageForm.get('offsetRatePercent')?.setValue(parseFloat(rawValue), { emitEvent: true });
+    } else {
+      this.mortgageForm.get('offsetRatePercent')?.setValue(rawValue, { emitEvent: true });
     }
+    this.mortgageForm.get('offsetRatePercent')?.updateValueAndValidity({ emitEvent: true });
   }
 
   onOffsetRateBlur(): void {
-    this.mortgageForm.get('offsetRatePercent')?.markAsTouched();
+    const control = this.mortgageForm.get('offsetRatePercent');
+    const annualRate = this.mortgageForm.get('annualRatePercent')?.value;
+    control?.markAsTouched();
+    const value = control?.value;
+    if (value === null || value === undefined || isNaN(Number(value)) || typeof value === 'string') {
+      control?.setValue(annualRate || 0);
+    } else if (Number(value) < annualRate) {
+      control?.setValue(annualRate);
+    }
+    control?.updateValueAndValidity({ emitEvent: true });
   }
 
   getSliderValue(field: string): number {

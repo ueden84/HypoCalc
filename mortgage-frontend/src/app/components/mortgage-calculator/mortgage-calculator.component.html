@@ -11,13 +11,16 @@
           <mat-label>Principal Amount</mat-label>
           <input matInput type="text" [value]="getPrincipalDisplay()" placeholder="e.g., 3000000" (input)="onPrincipalInput($event)" (blur)="onPrincipalBlur()">
           <span matSuffix class="input-suffix">Kč</span>
-          <mat-error *ngIf="mortgageForm.get('principal')?.hasError('required') && mortgageForm.get('principal')?.touched">
+          <mat-error *ngIf="isInvalidNumber(mortgageForm.get('principal')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('principal')?.value) && mortgageForm.get('principal')?.hasError('required') && mortgageForm.get('principal')?.touched">
             Principal is required
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('principal')?.hasError('min')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('principal')?.value) && mortgageForm.get('principal')?.hasError('min')">
             Principal must be at least 0
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('principal')?.hasError('max')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('principal')?.value) && mortgageForm.get('principal')?.hasError('max')">
             Principal cannot exceed 20,000,000 Kč
           </mat-error>
         </mat-form-field>
@@ -31,13 +34,16 @@
           <mat-label>Annual Interest Rate (%)</mat-label>
           <input matInput type="text" [value]="getInterestRateDisplay()" placeholder="např. 4,79" (input)="onInterestRateInput($event)" (blur)="onInterestRateBlur()">
           <span matSuffix class="input-suffix">%</span>
-          <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('required') && mortgageForm.get('annualRatePercent')?.touched">
+          <mat-error *ngIf="isInvalidNumber(mortgageForm.get('annualRatePercent')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('annualRatePercent')?.value) && mortgageForm.get('annualRatePercent')?.hasError('required') && mortgageForm.get('annualRatePercent')?.touched">
             Interest rate is required
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('min')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('annualRatePercent')?.value) && mortgageForm.get('annualRatePercent')?.hasError('min')">
             Interest rate cannot be negative
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('annualRatePercent')?.hasError('max')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('annualRatePercent')?.value) && mortgageForm.get('annualRatePercent')?.hasError('max')">
             Interest rate cannot exceed 20%
           </mat-error>
         </mat-form-field>
@@ -51,13 +57,16 @@
           <mat-label>Loan Term (Years)</mat-label>
           <input matInput type="text" [value]="getYearsDisplay()" placeholder="e.g., 30" (input)="onYearsInput($event)" (blur)="onYearsBlur()">
           <span matSuffix class="input-suffix">years</span>
-          <mat-error *ngIf="mortgageForm.get('years')?.hasError('required') && mortgageForm.get('years')?.touched">
+          <mat-error *ngIf="isInvalidNumber(mortgageForm.get('years')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('years')?.value) && mortgageForm.get('years')?.hasError('required') && mortgageForm.get('years')?.touched">
             Years is required
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('years')?.hasError('min')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('years')?.value) && mortgageForm.get('years')?.hasError('min')">
             Minimum loan term is 1 year
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('years')?.hasError('max')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('years')?.value) && mortgageForm.get('years')?.hasError('max')">
             Maximum loan term is 30 years
           </mat-error>
         </mat-form-field>
@@ -72,10 +81,13 @@
           <mat-label>Offset Amount</mat-label>
           <input matInput type="text" [value]="getOffsetDisplay()" placeholder="e.g., 100000" (input)="onOffsetInput($event)" (blur)="onOffsetBlur()">
           <span matSuffix class="input-suffix">Kč</span>
-          <mat-error *ngIf="mortgageForm.get('offsetAmount')?.hasError('min')">
+          <mat-error *ngIf="isInvalidNumber(mortgageForm.get('offsetAmount')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('offsetAmount')?.value) && mortgageForm.get('offsetAmount')?.hasError('min')">
             Offset amount cannot be negative
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('offsetAmount')?.hasError('max')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('offsetAmount')?.value) && mortgageForm.get('offsetAmount')?.hasError('max')">
             Offset amount cannot exceed principal
           </mat-error>
         </mat-form-field>
@@ -87,17 +99,20 @@
           <mat-label>Offset Account Interest Rate (%)</mat-label>
           <input matInput type="text" [value]="getOffsetRateDisplay()" placeholder="e.g., 3.5" (input)="onOffsetRateInput($event)" (blur)="onOffsetRateBlur()">
           <span matSuffix class="input-suffix">%</span>
-          <mat-error *ngIf="mortgageForm.get('offsetRatePercent')?.hasError('min')">
+          <mat-error *ngIf="isInvalidNumber(mortgageForm.get('offsetRatePercent')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('offsetRatePercent')?.value) && mortgageForm.get('offsetRatePercent')?.hasError('min')">
             Offset rate cannot be negative
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('offsetRatePercent')?.hasError('maxRate')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('offsetRatePercent')?.value) && mortgageForm.get('offsetRatePercent')?.hasError('maxRate')">
             Offset rate cannot exceed 20%
           </mat-error>
-          <mat-error *ngIf="mortgageForm.get('offsetRatePercent')?.hasError('minRate')">
+          <mat-error *ngIf="!isInvalidNumber(mortgageForm.get('offsetRatePercent')?.value) && mortgageForm.get('offsetRatePercent')?.hasError('minRate')">
             Offset rate must be >= annual interest rate
           </mat-error>
         </mat-form-field>
-        <mat-slider class="full-width" min="0" max="20" step="0.01" discrete showTickMarks>
+        <mat-slider class="full-width" [min]="getOffsetRateMin()" max="20" step="0.01" discrete showTickMarks>
           <input matSliderThumb formControlName="offsetRatePercent">
         </mat-slider>
 
