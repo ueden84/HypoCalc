@@ -394,13 +394,45 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
     ]
   },
   "chartData": {
-    "years": [1, 2, ..., 25],
-    "standardBalance": [3936240.95, ...],
-    "offsetBalance": [2936240.95, ...],
-    "savingsBalance": [1099990.88, ...],
-    "yearlyPrincipal": [63759.05, ...],
-    "yearlyInterest": [142312.30, ...]
+    "years": [0, 1, 2, ..., 25],
+    "standardBalance": [4000000, 3936240.95, ...],
+    "offsetBalance": [3000000, 2936240.95, ...],
+    "savingsBalance": [1000000, 1099990.88, ...],
+    "yearlyPrincipal": [0, 63759.05, ...],
+    "yearlyInterest": [0, 142312.30, ...]
   }
+}
+```
+
+### Chart Compare API Request Format
+```json
+{
+  "mortgage": {
+    "principal": 4000000,
+    "annualRatePercent": 4.79,
+    "years": 25,
+    "offsetMode": "reduceAmount",
+    "offsetRatePercent": 4.79
+  },
+  "savings": {
+    "initialAmount": 1000000,
+    "monthlyContribution": 5000,
+    "annualInterestRatePercent": 4.5,
+    "taxRatePercent": 15,
+    "periodicity": "monthly",
+    "years": 10
+  },
+  "offsetAmount": 1000000
+}
+```
+
+### Chart Compare API Response Format
+```json
+{
+  "years": [0, 1, 2, ..., 25],
+  "offsetBenefit": [0, 47437.43, ...],
+  "savingsBenefit": [0, 2295.00, ...],
+  "difference": [0, 45142.43, ...]
 }
 ```
 
@@ -461,6 +493,7 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 - Mortgage API: `/api/mortgage/calculate`
 - Savings API: `/api/savings/calculate`
 - Chart API: `/api/chart/calculate`
+- Chart Compare API: `/api/chart/compare`
 
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed

@@ -43,14 +43,14 @@ export class MortgageCalculatorComponent implements OnInit {
     private fb: FormBuilder,
     private mortgageService: MortgageService
   ) {
-    const initialAnnualRate = 5.0;
+    const initialAnnualRate = 4.79;
     this.mortgageForm = this.fb.group({
-      principal: [2000000, [Validators.required, Validators.min(0), Validators.max(20000000)]],
+      principal: [4000000, [Validators.required, Validators.min(0), Validators.max(20000000)]],
       annualRatePercent: [initialAnnualRate, [Validators.required, Validators.min(0), Validators.max(20)]],
-      years: [30, [Validators.required, Validators.min(1), Validators.max(30)]],
-      offsetAmount: [0, [Validators.min(0), this.offsetValidator.bind(this)]],
+      years: [25, [Validators.required, Validators.min(1), Validators.max(30)]],
+      offsetAmount: [1000000, [Validators.min(0), this.offsetValidator.bind(this)]],
       offsetMode: ['reduceAmount'],
-      offsetRatePercent: [initialAnnualRate, [Validators.min(0), Validators.max(20), this.offsetRateValidator.bind(this)]]
+      offsetRatePercent: [4.99, [Validators.min(0), Validators.max(20), this.offsetRateValidator.bind(this)]]
     });
   }
 

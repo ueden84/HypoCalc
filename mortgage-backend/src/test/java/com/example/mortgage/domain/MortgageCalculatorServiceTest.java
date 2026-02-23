@@ -101,4 +101,49 @@ class MortgageCalculatorServiceTest {
         assertEquals(3000000, result.effectivePrincipal(), 0.01);
         assertEquals(22896.82, result.monthlyPayment(), 0.01);
     }
+    
+    @Test
+    void shouldCalculateOffsetBenefitWithReduceAmount() {
+        var result = service.calculateOffsetBenefit(4000000, 4.79, 25, 1000000, "reduceAmount", 4.79);
+        
+        assertEquals(25, result.size());
+        assertEquals(1, result.get(0).year());
+        
+        double firstYearCumulativeSavings = result.get(0).cumulativeSavings();
+        assertTrue(firstYearCumulativeSavings > 0, "First year should have positive savings");
+        
+        double lastYearCumulativeSavings = result.get(24).cumulativeSavings();
+        assertTrue(lastYearCumulativeSavings > firstYearCumulativeSavings, "Savings should accumulate over years");
+    }
+    
+    @Test
+    void shouldCalculateOffsetBenefitWithReduceTerm() {
+        var result = service.calculateOffsetBenefit(4000000, 4.79, 25, 1000000, "reduceTerm", 4.79);
+        
+        assertTrue(result.size() > 0);
+        
+        double cumulativeSavings = result.get(0).cumulativeSavings();
+        assertTrue(cumulativeSavings > 0, "Should have positive cumulative savings");
+    }
+    
+    @Test
+    void shouldReturnEmptyListForZeroOffsetAmount() {
+        var result = service.calculateOffsetBenefit(4000000, 4.79, 25, 0, "reduceAmount", 4.79);
+        
+        assertTrue(result.isEmpty());
+    }
+    
+    @Test
+    void shouldReturnEmptyListForZeroPrincipal() {
+        var result = service.calculateOffsetBenefit(0, 4.79, 25, 1000000, "reduceAmount", 4.79);
+        
+        assertTrue(result.isEmpty());
+    }
+    
+    @Test
+    void shouldReturnEmptyListForZeroYears() {
+        var result = service.calculateOffsetBenefit(4000000, 4.79, 0, 1000000, "reduceAmount", 4.79);
+        
+        assertTrue(result.isEmpty());
+    }
 }

@@ -52,6 +52,10 @@ public class ChartCompareUseCase {
         List<Double> offsetBenefitList = new ArrayList<>();
         List<Double> savingsBenefitList = new ArrayList<>();
         
+        yearList.add(0);
+        offsetBenefitList.add(0.0);
+        savingsBenefitList.add(0.0);
+        
         for (int year = 1; year <= years; year++) {
             yearList.add(year);
             

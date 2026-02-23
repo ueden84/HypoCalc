@@ -60,6 +60,15 @@ public class ChartCalculationUseCase {
             mortgageReq.offsetRatePercent()
         );
         
+        List<YearlyAmortization> yearlyAmortizationStandard = mortgageService.calculateYearlyAmortization(
+            mortgageReq.principal(),
+            mortgageReq.annualRatePercent(),
+            mortgageReq.years(),
+            0.0,
+            "reduceAmount",
+            0.0
+        );
+        
         List<MonthlyAmortization> monthlyAmortization = mortgageService.calculateMonthlyAmortization(
             mortgageReq.principal(),
             mortgageReq.annualRatePercent(),
@@ -88,7 +97,15 @@ public class ChartCalculationUseCase {
         double runningStandardBalance = mortgageReq.principal();
         double runningOffsetBalance = mortgageReq.principal() - mortgageReq.offsetAmount();
         
+        yearList.add(0);
+        standardBalanceList.add(runningStandardBalance);
+        offsetBalanceList.add(runningOffsetBalance);
+        savingsBalanceList.add(savingsReq.initialAmount());
+        yearlyPrincipalList.add(0.0);
+        yearlyInterestList.add(0.0);
+        
         int mortgageYears = yearlyAmortization.size();
+        int standardMortgageYears = yearlyAmortizationStandard.size();
         int savingsYears = yearlySavings.size();
         
         for (int year = 1; year <= years; year++) {
@@ -103,14 +120,16 @@ public class ChartCalculationUseCase {
                 yearlyInterestList.add(0.0);
             }
             
-            if (year <= mortgageYears) {
-                runningStandardBalance -= yearlyAmortization.get(year - 1).principalPaid();
+            // Standard balance: always use full mortgage term
+            if (year <= standardMortgageYears) {
+                runningStandardBalance -= yearlyAmortizationStandard.get(year - 1).principalPaid();
                 if (runningStandardBalance < 0) runningStandardBalance = 0;
                 standardBalanceList.add(runningStandardBalance);
             } else {
                 standardBalanceList.add(0.0);
             }
             
+            // Offset balance: use actual mortgage years (may be reduced with reduceTerm)
             if (year <= mortgageYears) {
                 runningOffsetBalance -= yearlyAmortization.get(year - 1).principalPaid();
                 if (runningOffsetBalance < 0) runningOffsetBalance = 0;
@@ -128,7 +147,7 @@ public class ChartCalculationUseCase {
             }
         }
         
-        List<YearlyData> mortgageYearlyData = yearlyAmortization.stream()
+        List<YearlyData> mortgageYearlyData = yearlyAmortizationStandard.stream()
             .map(ya -> new YearlyData(ya.year(), ya.principalPaid(), ya.interestPaid()))
             .toList();
         

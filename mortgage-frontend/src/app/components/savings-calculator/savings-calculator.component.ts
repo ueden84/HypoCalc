@@ -42,12 +42,12 @@ export class SavingsCalculatorComponent implements OnInit {
     private savingsService: SavingsService
   ) {
     this.savingsForm = this.fb.group({
-      initialAmount: [0, [Validators.required, Validators.min(0), Validators.max(100000000)]],
-      monthlyContribution: [5000, [Validators.required, Validators.min(0), Validators.max(1000000)]],
-      annualInterestRatePercent: [4.5, [Validators.required, Validators.min(0), Validators.max(20)]],
+      initialAmount: [1000000, [Validators.required, Validators.min(0), Validators.max(100000000)]],
+      monthlyContribution: [0, [Validators.required, Validators.min(0), Validators.max(1000000)]],
+      annualInterestRatePercent: [4, [Validators.required, Validators.min(0), Validators.max(20)]],
       taxRatePercent: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
-      periodicity: ['yearly', [Validators.required]],
-      years: [10, [Validators.required, Validators.min(1), Validators.max(50)]]
+      periodicity: ['monthly', [Validators.required]],
+      years: [25, [Validators.required, Validators.min(1), Validators.max(50)]]
     });
   }
 
