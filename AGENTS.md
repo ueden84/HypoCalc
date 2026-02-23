@@ -353,6 +353,57 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 }
 ```
 
+### Chart API Request Format
+```json
+{
+  "mortgage": {
+    "principal": 4000000,
+    "annualRatePercent": 4.79,
+    "years": 25,
+    "offsetAmount": 1000000,
+    "offsetMode": "reduceAmount",
+    "offsetRatePercent": 4.79
+  },
+  "savings": {
+    "initialAmount": 1000000,
+    "monthlyContribution": 5000,
+    "annualInterestRatePercent": 4.5,
+    "taxRatePercent": 15,
+    "periodicity": "monthly",
+    "years": 10
+  }
+}
+```
+
+### Chart API Response Format
+```json
+{
+  "mortgage": {
+    "monthlyPayment": 17172.61,
+    "totalPaid": 5151783.98,
+    "yearlyData": [
+      {"year": 1, "principalPaid": 63759.05, "interestPaid": 142312.30},
+      ...
+    ]
+  },
+  "savings": {
+    "totalSaved": 2194548.89,
+    "yearlyData": [
+      {"year": 1, "balance": 1099990.88},
+      ...
+    ]
+  },
+  "chartData": {
+    "years": [1, 2, ..., 25],
+    "standardBalance": [3936240.95, ...],
+    "offsetBalance": [2936240.95, ...],
+    "savingsBalance": [1099990.88, ...],
+    "yearlyPrincipal": [63759.05, ...],
+    "yearlyInterest": [142312.30, ...]
+  }
+}
+```
+
 ## Sample Calculations
 
 ### Without Offset
@@ -409,6 +460,7 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 - Frontend local: http://localhost:4200
 - Mortgage API: `/api/mortgage/calculate`
 - Savings API: `/api/savings/calculate`
+- Chart API: `/api/chart/calculate`
 
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed

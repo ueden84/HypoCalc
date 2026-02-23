@@ -112,6 +112,69 @@ Response:
 - `periodicity` - Compounding period: "monthly" or "yearly"
 - `years` - Investment period in years
 
+### Chart API (Combined Mortgage + Savings Visualization)
+
+**POST** `/api/chart/calculate`
+
+Combines mortgage and savings calculations to generate visualization data for comparing:
+- Standard mortgage balance over time
+- Offset mortgage balance over time
+- Savings balance over time
+- Annual principal vs interest payments
+
+Request:
+```json
+{
+  "mortgage": {
+    "principal": 4000000,
+    "annualRatePercent": 4.79,
+    "years": 25,
+    "offsetAmount": 1000000,
+    "offsetMode": "reduceAmount",
+    "offsetRatePercent": 4.79
+  },
+  "savings": {
+    "initialAmount": 1000000,
+    "monthlyContribution": 5000,
+    "annualInterestRatePercent": 4.5,
+    "taxRatePercent": 15,
+    "periodicity": "monthly",
+    "years": 10
+  }
+}
+```
+
+Response:
+```json
+{
+  "mortgage": {
+    "monthlyPayment": 17172.61,
+    "totalPaid": 5151783.98,
+    "yearlyData": [
+      {"year": 1, "principalPaid": 63759.05, "interestPaid": 142312.30},
+      {"year": 2, "principalPaid": 66881.06, "interestPaid": 139190.30},
+      ...
+    ]
+  },
+  "savings": {
+    "totalSaved": 2194548.89,
+    "yearlyData": [
+      {"year": 1, "balance": 1099990.88},
+      {"year": 2, "balance": 1203874.18},
+      ...
+    ]
+  },
+  "chartData": {
+    "years": [1, 2, 3, ..., 25],
+    "standardBalance": [3936240.95, 3869359.88, ...],
+    "offsetBalance": [2936240.95, 2869359.88, ...],
+    "savingsBalance": [1099990.88, 1203874.18, ...],
+    "yearlyPrincipal": [63759.05, 66881.06, ...],
+    "yearlyInterest": [142312.30, 139190.30, ...]
+  }
+}
+```
+
 ## Frontend (Angular)
 
 ### Local Development
@@ -152,6 +215,9 @@ ng test --watch=false      # Run tests once
   - Configurable interest rate
   - Tax rate on interest (default 15%)
   - Monthly or yearly compounding periodicity
+- Chart visualization automatically displays when both calculators are used
+  - Shows balance comparison (standard, offset, savings)
+  - Shows annual principal vs interest breakdown
 
 #  Sample calculation:
 - principal amount: 4 000 000
