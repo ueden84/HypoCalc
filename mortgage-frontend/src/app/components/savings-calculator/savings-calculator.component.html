@@ -1,0 +1,170 @@
+<mat-card class="calculator-card">
+  <mat-card-header>
+    <mat-card-title>Savings Calculator</mat-card-title>
+    <mat-card-subtitle>Calculate your savings over time</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="savingsForm" (ngSubmit)="onSubmit()" class="calculator-form">
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Initial Amount</mat-label>
+          <input matInput type="text" [value]="getInitialAmountDisplay()" placeholder="e.g., 1000000" (input)="onInitialAmountInput($event)" (blur)="onInitialAmountBlur()">
+          <span matSuffix class="input-suffix">Kč</span>
+          <mat-error *ngIf="isInvalidNumber(savingsForm.get('initialAmount')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('initialAmount')?.value) && savingsForm.get('initialAmount')?.hasError('required') && savingsForm.get('initialAmount')?.touched">
+            Initial amount is required
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('initialAmount')?.value) && savingsForm.get('initialAmount')?.hasError('min')">
+            Initial amount cannot be negative
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('initialAmount')?.value) && savingsForm.get('initialAmount')?.hasError('max')">
+            Initial amount cannot exceed 100,000,000 Kč
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="10000000" step="50000" discrete showTickMarks>
+          <input matSliderThumb formControlName="initialAmount">
+        </mat-slider>
+      </div>
+
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Monthly Contribution</mat-label>
+          <input matInput type="text" [value]="getMonthlyContributionDisplay()" placeholder="e.g., 5000" (input)="onMonthlyContributionInput($event)" (blur)="onMonthlyContributionBlur()">
+          <span matSuffix class="input-suffix">Kč</span>
+          <mat-error *ngIf="isInvalidNumber(savingsForm.get('monthlyContribution')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('monthlyContribution')?.value) && savingsForm.get('monthlyContribution')?.hasError('required') && savingsForm.get('monthlyContribution')?.touched">
+            Monthly contribution is required
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('monthlyContribution')?.value) && savingsForm.get('monthlyContribution')?.hasError('min')">
+            Monthly contribution cannot be negative
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('monthlyContribution')?.value) && savingsForm.get('monthlyContribution')?.hasError('max')">
+            Monthly contribution cannot exceed 1,000,000 Kč
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="100000" step="500" discrete showTickMarks>
+          <input matSliderThumb formControlName="monthlyContribution">
+        </mat-slider>
+      </div>
+
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Annual Interest Rate (%)</mat-label>
+          <input matInput type="text" [value]="getInterestRateDisplay()" placeholder="e.g., 4.5" (input)="onInterestRateInput($event)" (blur)="onInterestRateBlur()">
+          <span matSuffix class="input-suffix">%</span>
+          <mat-error *ngIf="isInvalidNumber(savingsForm.get('annualInterestRatePercent')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('annualInterestRatePercent')?.value) && savingsForm.get('annualInterestRatePercent')?.hasError('required') && savingsForm.get('annualInterestRatePercent')?.touched">
+            Interest rate is required
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('annualInterestRatePercent')?.value) && savingsForm.get('annualInterestRatePercent')?.hasError('min')">
+            Interest rate cannot be negative
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('annualInterestRatePercent')?.value) && savingsForm.get('annualInterestRatePercent')?.hasError('max')">
+            Interest rate cannot exceed 20%
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="20" step="0.1" discrete showTickMarks>
+          <input matSliderThumb formControlName="annualInterestRatePercent">
+        </mat-slider>
+      </div>
+
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tax Rate (%)</mat-label>
+          <input matInput type="text" [value]="getTaxRateDisplay()" placeholder="e.g., 15" (input)="onTaxRateInput($event)" (blur)="onTaxRateBlur()">
+          <span matSuffix class="input-suffix">%</span>
+          <mat-error *ngIf="isInvalidNumber(savingsForm.get('taxRatePercent')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('taxRatePercent')?.value) && savingsForm.get('taxRatePercent')?.hasError('required') && savingsForm.get('taxRatePercent')?.touched">
+            Tax rate is required
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('taxRatePercent')?.value) && savingsForm.get('taxRatePercent')?.hasError('min')">
+            Tax rate cannot be negative
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('taxRatePercent')?.value) && savingsForm.get('taxRatePercent')?.hasError('max')">
+            Tax rate cannot exceed 100%
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="0" max="50" step="1" discrete showTickMarks>
+          <input matSliderThumb formControlName="taxRatePercent">
+        </mat-slider>
+      </div>
+
+      <div class="field-container periodicity-field">
+        <label class="periodicity-label">Compounding Periodicity</label>
+        <mat-radio-group formControlName="periodicity" class="periodicity-group">
+          <mat-radio-button value="yearly">Yearly</mat-radio-button>
+          <mat-radio-button value="monthly">Monthly</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="field-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Investment Period (Years)</mat-label>
+          <input matInput type="text" [value]="getYearsDisplay()" placeholder="e.g., 10" (input)="onYearsInput($event)" (blur)="onYearsBlur()">
+          <span matSuffix class="input-suffix">years</span>
+          <mat-error *ngIf="isInvalidNumber(savingsForm.get('years')?.value)">
+            Invalid number
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('years')?.value) && savingsForm.get('years')?.hasError('required') && savingsForm.get('years')?.touched">
+            Years is required
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('years')?.value) && savingsForm.get('years')?.hasError('min')">
+            Minimum period is 1 year
+          </mat-error>
+          <mat-error *ngIf="!isInvalidNumber(savingsForm.get('years')?.value) && savingsForm.get('years')?.hasError('max')">
+            Maximum period is 50 years
+          </mat-error>
+        </mat-form-field>
+        <mat-slider class="full-width" min="1" max="50" step="1" discrete showTickMarks>
+          <input matSliderThumb formControlName="years">
+        </mat-slider>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="savingsForm.invalid || loading" class="full-width">
+        <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
+        <span *ngIf="!loading">Calculate</span>
+      </button>
+    </form>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <mat-card *ngIf="result" class="results-card" id="results-section">
+      <mat-card-header>
+        <mat-card-title>Results</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="result-item">
+          <span class="result-label">Initial Amount:</span>
+          <span class="result-value">{{ formatCurrency(result.initialAmount) }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Total Contributions:</span>
+          <span class="result-value">{{ formatCurrency(result.totalContributions) }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Interest (before tax):</span>
+          <span class="result-value">{{ formatCurrency(result.totalInterestEarned + result.totalTaxPaid) }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Tax Paid:</span>
+          <span class="result-value tax-value">- {{ formatCurrency(result.totalTaxPaid) }}</span>
+        </div>
+        <div class="result-item highlight">
+          <span class="result-label">Final Balance:</span>
+          <span class="result-value">{{ formatCurrency(result.totalSaved) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-card-content>
+</mat-card>

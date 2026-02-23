@@ -125,3 +125,15 @@ Using offset
 - total interest with offset: 1 197 500 + 954 283,98 = 2 151 783,98
 - offset interest earned: 2 869 045,3 - 2 151 783,98 = 717 261,32
 
+
+# Saving account sample calculation:
+- initial amount: 1 000 000
+- monthly amount: 0
+- interest rate: 3%
+- investment in years: 10
+- periodicity: monthly
+
+Result:
+- total: 1 290 112,53
+- interest gain: 341 308,86
+- tax: 51 196,33

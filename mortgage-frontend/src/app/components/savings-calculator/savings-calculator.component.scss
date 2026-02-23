@@ -1,0 +1,97 @@
+@use '@angular/material' as mat;
+
+.calculator-card {
+  margin: 16px;
+  max-width: 500px;
+}
+
+.calculator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.periodicity-field {
+  margin: 8px 0;
+}
+
+.periodicity-label {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 8px;
+}
+
+.periodicity-group {
+  display: flex;
+  gap: 24px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.input-suffix {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+}
+
+.inline-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+button[type="submit"] {
+  margin-top: 16px;
+  height: 48px;
+  font-size: 16px;
+}
+
+.error-message {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.results-card {
+  margin-top: 24px;
+  background-color: #f5f5f5;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.result-value {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.result-value.tax-value {
+  color: #c62828;
+}
+
+.result-item.highlight .result-value {
+  color: #2e7d32;
+  font-size: 1.2em;
+}

@@ -25,6 +25,9 @@ mvn test
 # Run single test class
 mvn test -Dtest=MortgageCalculatorServiceTest
 
+# Run single test class (Savings)
+mvn test -Dtest=SavingsCalculatorServiceTest
+
 # Run single test method
 mvn test -Dtest=MortgageCalculatorServiceTest#shouldCalculateWithInterest
 
@@ -325,6 +328,31 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 3. Create service if needed
 4. Add Material modules to component imports
 
+### Savings Calculator API Request Format
+```json
+{
+  "initialAmount": 1000000,
+  "monthlyContribution": 5000,
+  "annualInterestRatePercent": 4.5,
+  "taxRatePercent": 15,
+  "periodicity": "monthly",
+  "years": 10
+}
+```
+
+### Savings Calculator API Response Format
+```json
+{
+  "initialAmount": 1000000.0,
+  "monthlyContribution": 5000.0,
+  "totalContributions": 600000.0,
+  "totalInterestEarned": 505366.56,
+  "totalTaxPaid": 89182.33,
+  "totalSaved": 2194548.89,
+  "effectiveYears": 10
+}
+```
+
 ## Sample Calculations
 
 ### Without Offset
@@ -353,10 +381,34 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 - monthlyPayment: 22,896.82 (same as without offset)
 - Loan term reduced based on offset amount
 
+### Savings Account (Initial Amount Only, Monthly Compounding)
+- initialAmount: 1,000,000
+- monthlyContribution: 0
+- annualInterestRate: 3%
+- taxRate: 15%
+- periodicity: monthly
+- years: 10
+- totalContributions: 0
+- totalInterestEarned (after tax): 296,950.52
+- totalTaxPaid: 52,403.03
+- totalSaved (final balance): 1,290,112.53
+
+### Savings Account (With Monthly Contribution)
+- initialAmount: 1,000,000
+- monthlyContribution: 5,000
+- annualInterestRate: 4.5%
+- taxRate: 15%
+- periodicity: monthly
+- years: 10
+- totalContributions: 600,000
+- final balance: ~2,194,548.89
+- totalTaxPaid: ~89,182.33
+
 ## Environment URLs
 - Backend local: http://localhost:8080
 - Frontend local: http://localhost:4200
-- API base: `/api/mortgage`
+- Mortgage API: `/api/mortgage/calculate`
+- Savings API: `/api/savings/calculate`
 
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed
