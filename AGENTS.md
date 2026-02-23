@@ -46,9 +46,6 @@ ng serve
 # Build for production
 ng build --configuration production
 
-# Type check
-ng lint (if available)
-
 # Run tests (watch mode)
 ng test
 
@@ -222,6 +219,37 @@ ngOnInit() {
 }
 ```
 
+**Input Validation**: For number fields, use regex validation to reject partial matches:
+```typescript
+// Integer field (e.g., principal, years)
+if (/^\d+$/.test(rawValue)) {
+  this.form.get('field')?.setValue(parseInt(rawValue, 10), { emitEvent: true });
+} else {
+  this.form.get('field')?.setValue(rawValue, { emitEvent: true }); // Keep invalid for error display
+}
+
+// Decimal field (e.g., interest rate)
+if (/^\d*\.?\d+$/.test(rawValue)) {
+  this.form.get('field')?.setValue(parseFloat(rawValue), { emitEvent: true });
+} else {
+  this.form.get('field')?.setValue(rawValue, { emitEvent: true });
+}
+```
+
+**Display Functions**: Return raw string value for invalid input to show in template:
+```typescript
+getFieldDisplay(): string {
+  const value = this.form.get('field')?.value;
+  if (value === null || value === undefined || value === '') {
+    return '';
+  }
+  if (typeof value === 'string') {
+    return value; // Return invalid string for display
+  }
+  return this.formatNumber(value);
+}
+```
+
 **SCSS**: Component-scoped styles, use Material theming variables:
 ```scss
 @use '@angular/material' as mat;
@@ -297,6 +325,34 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 3. Create service if needed
 4. Add Material modules to component imports
 
+## Sample Calculations
+
+### Without Offset
+- principal: 4,000,000
+- annualRate: 4.79%
+- years: 25
+- monthlyPayment: 22,896.82
+- totalPaid: 6,869,045.30
+- totalInterest: 2,869,045.30
+
+### With Offset (reduceAmount mode)
+- principal: 4,000,000
+- annualRate: 4.79%
+- years: 25
+- offsetAmount: 1,000,000
+- offsetRate: 4.79%
+- offsetMode: reduceAmount
+- effectivePrincipal: 3,000,000
+- monthlyPayment: 17,172.61
+- totalPaid: 5,151,783.98
+- totalInterest: 2,151,783.98 (interest paid + offset interest earned)
+- totalOffsetInterestEarned: 717,261.32 (savings vs no offset)
+
+### With Offset (reduceTerm mode)
+- Same inputs as reduceAmount
+- monthlyPayment: 22,896.82 (same as without offset)
+- Loan term reduced based on offset amount
+
 ## Environment URLs
 - Backend local: http://localhost:8080
 - Frontend local: http://localhost:4200
@@ -305,19 +361,3 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed
 - **Frontend**: Avoid additional UI libraries (Angular Material is sufficient)
-
-#  Sample calculation:
-- principal amount: 4 000 000
-- annual interest rate: 4,79
-- loan term: 25
-- total interest: 2 869 045,3
-Using offset
-- offset amount: 1 000 000
-- offset interest rate: 4,79
-- offset optionm: reduce principal amount
-- effective principal: 3 000 000
-- monthly payment: 17 172,61
-- total paid with offset: 5 151 783,98
-- total interest paid without offset: 2 869 045,3
-- total interest with offset: 1 197 500 + 954 283,98 = 2 151 783,98
-- offset interest earned: 2 869 045,3 - 2 151 783,98 = 717 261,32
