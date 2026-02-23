@@ -61,3 +61,29 @@ export interface ChartResponse {
   };
   chartData: ChartData;
 }
+
+export interface ChartCompareRequest {
+  mortgage: {
+    principal: number;
+    annualRatePercent: number;
+    years: number;
+    offsetMode: string;
+    offsetRatePercent: number;
+  };
+  savings: {
+    initialAmount: number;
+    monthlyContribution: number;
+    annualInterestRatePercent: number;
+    taxRatePercent: number;
+    periodicity: string;
+    years: number;
+  };
+  offsetAmount: number;
+}
+
+export interface ChartCompareResponse {
+  years: number[];
+  offsetBenefit: number[];
+  savingsBenefit: number[];
+  difference: number[];
+}

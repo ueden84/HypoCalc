@@ -1,0 +1,19 @@
+.chart-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  h4 {
+    margin: 0 0 16px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .chart-wrapper {
+    height: 400px;
+    position: relative;
+  }
+}

@@ -65,3 +65,64 @@ interface AmortizationMonth {
   interestPaid: number;
   remainingBalance: number;
 }
+
+---
+# Offset vs Savings Comparison Chart Specification
+
+This chart visualizes how the financial benefit of an offset account compares to a savings account over time, assuming the same deposit amount and the same number of years.
+
+---
+
+## 1. Chart Axes
+
+### X‑Axis (horizontal)
+- Years (1..N)
+
+### Left Y‑Axis (vertical)
+- Balance (CZK)
+
+### Right Y‑Axis (vertical)
+- Annual payment (CZK)  
+  (Used only if needed for alignment with other charts)
+
+---
+
+## 2. Chart Series
+
+### 2.1 Line: Offset Cumulative Benefit
+Represents the total interest avoided due to the offset account up to each year.
+
+
+
+\[
+\text{OffsetBenefit}(year) = \sum_{m=1..year} (\text{InterestWithoutOffset}_m - \text{InterestWithOffset}_m)
+\]
+
+
+
+### 2.2 Line: Savings Cumulative Benefit
+Represents the total net gain from the savings account up to each year.
+
+
+
+\[
+\text{SavingsBenefit}(year) = \text{SavingsBalance}(year) - \text{TotalContributions}(year)
+\]
+
+
+
+### 2.3 Line: Difference (optional)
+Shows which strategy is better at each year.
+
+
+
+\[
+\text{Difference}(year) = \text{OffsetBenefit}(year) - \text{SavingsBenefit}(year)
+\]
+
+
+
+Positive → offset wins  
+Negative → savings wins
+
+---

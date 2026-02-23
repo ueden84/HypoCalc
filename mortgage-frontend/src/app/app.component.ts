@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { MortgageCalculatorComponent } from './components/mortgage-calculator/mortgage-calculator.component';
 import { SavingsCalculatorComponent } from './components/savings-calculator/savings-calculator.component';
 import { ChartComponent, ChartData } from './components/chart/chart.component';
-import { MortgageRequest, MortgageResult, SavingsRequest, SavingsResult, ChartResponse } from './models/mortgage.model';
+import { ChartCompareComponent } from './components/chart-compare/chart-compare.component';
+import { MortgageRequest, MortgageResult, SavingsRequest, SavingsResult, ChartResponse, ChartCompareResponse } from './models/mortgage.model';
 import { ChartService } from './services/chart.service';
+import { ChartCompareService } from './services/chart-compare.service';
 import { HttpClientModule } from '@angular/common/http';
 
 @Component({
@@ -15,7 +17,8 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     MortgageCalculatorComponent,
     SavingsCalculatorComponent,
-    ChartComponent
+    ChartComponent,
+    ChartCompareComponent
   ],
   template: `
     <div class="app-container">
@@ -24,6 +27,7 @@ import { HttpClientModule } from '@angular/common/http';
         <app-savings-calculator (calculated)="onSavingsCalculated($event)"></app-savings-calculator>
       </div>
       <app-chart *ngIf="chartData" [chartData]="chartData"></app-chart>
+      <app-chart-compare *ngIf="compareChartData" [chartData]="compareChartData"></app-chart-compare>
     </div>
   `,
   styles: [`
@@ -47,8 +51,12 @@ export class AppComponent {
   private savingsRequest: SavingsRequest | null = null;
   
   chartData: ChartData | null = null;
+  compareChartData: ChartCompareResponse | null = null;
   
-  constructor(private chartService: ChartService) {}
+  constructor(
+    private chartService: ChartService,
+    private chartCompareService: ChartCompareService
+  ) {}
   
   onMortgageCalculated(data: { request: MortgageRequest; result: MortgageResult }): void {
     this.mortgageRequest = data.request;
@@ -89,6 +97,39 @@ export class AppComponent {
           console.error('Error generating chart:', err);
         }
       });
+      
+      const offsetAmount = this.mortgageRequest.offsetAmount || 0;
+      if (offsetAmount > 0) {
+        const compareRequest = {
+          mortgage: {
+            principal: this.mortgageRequest.principal,
+            annualRatePercent: this.mortgageRequest.annualRatePercent,
+            years: this.mortgageRequest.years,
+            offsetMode: this.mortgageRequest.offsetMode || 'reduceAmount',
+            offsetRatePercent: this.mortgageRequest.offsetRatePercent || 0
+          },
+          savings: {
+            initialAmount: this.savingsRequest.initialAmount,
+            monthlyContribution: this.savingsRequest.monthlyContribution,
+            annualInterestRatePercent: this.savingsRequest.annualInterestRatePercent,
+            taxRatePercent: this.savingsRequest.taxRatePercent,
+            periodicity: this.savingsRequest.periodicity,
+            years: this.savingsRequest.years
+          },
+          offsetAmount: offsetAmount
+        };
+        
+        this.chartCompareService.compareChart(compareRequest).subscribe({
+          next: (response) => {
+            this.compareChartData = response;
+          },
+          error: (err) => {
+            console.error('Error generating compare chart:', err);
+          }
+        });
+      } else {
+        this.compareChartData = null;
+      }
     }
   }
 }

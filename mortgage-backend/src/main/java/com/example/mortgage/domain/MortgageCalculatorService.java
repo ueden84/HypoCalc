@@ -221,6 +221,88 @@ public class MortgageCalculatorService {
         return monthlyData;
     }
     
+    public List<YearlyOffsetBenefit> calculateOffsetBenefit(double principal, double annualRatePercent, int years,
+                                                           double offsetAmount, String offsetMode, double offsetRatePercent) {
+        List<YearlyOffsetBenefit> yearlyData = new ArrayList<>();
+        
+        if (principal <= 0 || years <= 0 || offsetAmount <= 0) {
+            return yearlyData;
+        }
+        
+        double monthlyRate = annualRatePercent / 100.0 / 12.0;
+        int totalMonths = years * 12;
+        
+        double monthlyPaymentWithoutOffset;
+        if (annualRatePercent == 0) {
+            monthlyPaymentWithoutOffset = principal / totalMonths;
+        } else {
+            double factor = Math.pow(1 + monthlyRate, totalMonths);
+            monthlyPaymentWithoutOffset = principal * (monthlyRate * factor) / (factor - 1);
+        }
+        
+        double effectivePrincipal = principal - offsetAmount;
+        int numberOfPaymentsWithOffset = years * 12;
+        
+        double monthlyPaymentWithOffset;
+        if (annualRatePercent == 0) {
+            monthlyPaymentWithOffset = effectivePrincipal / numberOfPaymentsWithOffset;
+        } else {
+            double factor = Math.pow(1 + monthlyRate, numberOfPaymentsWithOffset);
+            monthlyPaymentWithOffset = effectivePrincipal * (monthlyRate * factor) / (factor - 1);
+        }
+        
+        if ("reduceTerm".equals(offsetMode) && offsetAmount > 0) {
+            if (monthlyPaymentWithoutOffset > effectivePrincipal * monthlyRate) {
+                numberOfPaymentsWithOffset = (int) Math.ceil(
+                    Math.log(monthlyPaymentWithoutOffset / (monthlyPaymentWithoutOffset - effectivePrincipal * monthlyRate))
+                    / Math.log(1 + monthlyRate)
+                );
+            }
+            monthlyPaymentWithOffset = monthlyPaymentWithoutOffset;
+        }
+        
+        double balanceWithoutOffset = principal;
+        double balanceWithOffset = effectivePrincipal;
+        
+        double cumulativeSavings = 0;
+        
+        for (int year = 1; year <= years; year++) {
+            double yearlyInterestWithoutOffset = 0;
+            double yearlyInterestWithOffset = 0;
+            
+            for (int month = 1; month <= 12; month++) {
+                if (balanceWithoutOffset > 0) {
+                    double interestWithoutOffset = balanceWithoutOffset * monthlyRate;
+                    yearlyInterestWithoutOffset += interestWithoutOffset;
+                    double principalPayment = monthlyPaymentWithoutOffset - interestWithoutOffset;
+                    if (principalPayment > balanceWithoutOffset) {
+                        principalPayment = balanceWithoutOffset;
+                    }
+                    balanceWithoutOffset -= principalPayment;
+                    if (balanceWithoutOffset < 0.01) balanceWithoutOffset = 0;
+                }
+                
+                if (balanceWithOffset > 0) {
+                    double interestWithOffset = balanceWithOffset * monthlyRate;
+                    yearlyInterestWithOffset += interestWithOffset;
+                    double principalPayment = monthlyPaymentWithOffset - interestWithOffset;
+                    if (principalPayment > balanceWithOffset) {
+                        principalPayment = balanceWithOffset;
+                    }
+                    balanceWithOffset -= principalPayment;
+                    if (balanceWithOffset < 0.01) balanceWithOffset = 0;
+                }
+            }
+            
+            double yearlySavings = yearlyInterestWithoutOffset - yearlyInterestWithOffset;
+            cumulativeSavings += yearlySavings;
+            
+            yearlyData.add(new YearlyOffsetBenefit(year, yearlyInterestWithoutOffset, yearlyInterestWithOffset, yearlySavings, cumulativeSavings));
+        }
+        
+        return yearlyData;
+    }
+    
     private void validateInputs(double principal, double annualRatePercent, int years) {
         if (principal <= 0) {
             throw new IllegalArgumentException("Principal must be greater than 0");
@@ -236,4 +318,6 @@ public class MortgageCalculatorService {
     public record YearlyAmortization(int year, double principalPaid, double interestPaid) {}
     
     public record MonthlyAmortization(int month, double principalPaid, double interestPaid, double remainingBalance) {}
+    
+    public record YearlyOffsetBenefit(int year, double interestWithoutOffset, double interestWithOffset, double monthlySavings, double cumulativeSavings) {}
 }
