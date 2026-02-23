@@ -22,8 +22,8 @@ import { SavingsCalculatorComponent } from './components/savings-calculator/savi
       padding: 20px;
     }
     .calculators-row {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 500px));
       justify-content: center;
       gap: 20px;
     }
