@@ -53,6 +53,8 @@ mvn test -Dtest=ClassName#methodName  # Run single test method
 
 ### API Contract
 
+### Mortgage Calculator
+
 **POST** `/api/mortgage/calculate`
 
 Request:
@@ -72,6 +74,43 @@ Response:
   "totalInterest": 279765.60
 }
 ```
+
+### Savings Calculator
+
+**POST** `/api/savings/calculate`
+
+Request:
+```json
+{
+  "initialAmount": 1000000,
+  "monthlyContribution": 5000,
+  "annualInterestRatePercent": 4.5,
+  "taxRatePercent": 15,
+  "periodicity": "monthly",
+  "years": 10
+}
+```
+
+Response:
+```json
+{
+  "initialAmount": 1000000.0,
+  "monthlyContribution": 5000.0,
+  "totalContributions": 600000.0,
+  "totalInterestEarned": 505366.56,
+  "totalTaxPaid": 89182.33,
+  "totalSaved": 2194548.89,
+  "effectiveYears": 10
+}
+```
+
+**Parameters:**
+- `initialAmount` - Initial savings amount (CZK)
+- `monthlyContribution` - Monthly contribution (CZK)
+- `annualInterestRatePercent` - Annual interest rate (%)
+- `taxRatePercent` - Tax rate on interest (%, default: 15)
+- `periodicity` - Compounding period: "monthly" or "yearly"
+- `years` - Investment period in years
 
 ## Frontend (Angular)
 
@@ -103,10 +142,16 @@ ng test --watch=false      # Run tests once
 - **Infrastructure**: Docker, Docker Compose
 
 ## Functional requirements
-- currency is CZK
-- values cannot be negative
-- use czech format for numbers
-- sliders are present to set the value
+- Currency is CZK
+- Values cannot be negative
+- Use Czech format for numbers
+- Sliders are present to set the value
+- Two calculators: Mortgage and Savings
+- Savings calculator supports:
+  - Initial amount and monthly contributions
+  - Configurable interest rate
+  - Tax rate on interest (default 15%)
+  - Monthly or yearly compounding periodicity
 
 #  Sample calculation:
 - principal amount: 4 000 000
@@ -126,14 +171,30 @@ Using offset
 - offset interest earned: 2 869 045,3 - 2 151 783,98 = 717 261,32
 
 
-# Saving account sample calculation:
+# Savings Account Sample Calculation:
 - initial amount: 1 000 000
 - monthly amount: 0
 - interest rate: 3%
-- investment in years: 10
+- tax rate: 15%
 - periodicity: monthly
+- investment in years: 10
 
 Result:
-- total: 1 290 112,53
-- interest gain: 341 308,86
-- tax: 51 196,33
+- total contributions: 0
+- interest (before tax): 349 353,55
+- tax paid: 52 403,03
+- final balance: 1 290 112,53
+
+# Savings Account with Monthly Contribution:
+- initial amount: 1 000 000
+- monthly contribution: 5 000
+- interest rate: 4.5%
+- tax rate: 15%
+- periodicity: monthly
+- years: 10
+
+Result:
+- total contributions: 600 000
+- interest (before tax): 594 548,89
+- tax paid: 89 182,33
+- final balance: 2 194 548,89
