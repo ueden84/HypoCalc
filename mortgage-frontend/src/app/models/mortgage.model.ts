@@ -34,3 +34,30 @@ export interface SavingsResult {
   totalSaved: number;
   effectiveYears?: number;
 }
+
+export interface ChartRequest {
+  mortgage: MortgageRequest;
+  savings: SavingsRequest;
+}
+
+export interface ChartData {
+  years: number[];
+  standardBalance: number[];
+  offsetBalance: number[];
+  savingsBalance: number[];
+  yearlyPrincipal: number[];
+  yearlyInterest: number[];
+}
+
+export interface ChartResponse {
+  mortgage: {
+    monthlyPayment: number;
+    totalPaid: number;
+    yearlyData: { year: number; principalPaid: number; interestPaid: number }[];
+  };
+  savings: {
+    totalSaved: number;
+    yearlyData: { year: number; balance: number }[];
+  };
+  chartData: ChartData;
+}

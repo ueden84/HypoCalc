@@ -1,0 +1,17 @@
+<mat-card class="chart-card" *ngIf="chartData">
+  <mat-card-header>
+    <mat-card-title>Financial Comparison Chart</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="chart-container">
+      <div class="chart-section">
+        <h4>Balance Over Time</h4>
+        <canvas id="lineChart"></canvas>
+      </div>
+      <div class="chart-section">
+        <h4>Annual Payment Breakdown</h4>
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

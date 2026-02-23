@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -32,6 +32,8 @@ import { MortgageRequest, MortgageResult } from '../../models/mortgage.model';
   styleUrls: ['./mortgage-calculator.component.scss']
 })
 export class MortgageCalculatorComponent implements OnInit {
+  @Output() calculated = new EventEmitter<{ request: MortgageRequest; result: MortgageResult }>();
+  
   mortgageForm: FormGroup;
   result: MortgageResult | null = null;
   loading = false;
@@ -326,6 +328,7 @@ export class MortgageCalculatorComponent implements OnInit {
         next: (result) => {
           this.result = result;
           this.loading = false;
+          this.calculated.emit({ request, result });
           // Only scroll to results on first calculation, not when recalculating
           if (!hadPreviousResult) {
             setTimeout(() => {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -30,6 +30,8 @@ import { SavingsRequest, SavingsResult } from '../../models/mortgage.model';
   styleUrls: ['./savings-calculator.component.scss']
 })
 export class SavingsCalculatorComponent implements OnInit {
+  @Output() calculated = new EventEmitter<{ request: SavingsRequest; result: SavingsResult }>();
+  
   savingsForm: FormGroup;
   result: SavingsResult | null = null;
   loading = false;
@@ -66,6 +68,7 @@ export class SavingsCalculatorComponent implements OnInit {
       next: (result) => {
         this.result = result;
         this.loading = false;
+        this.calculated.emit({ request, result });
       },
       error: (err) => {
         this.error = err.message || 'An error occurred';

@@ -1,5 +1,8 @@
 package com.example.mortgage.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SavingsCalculatorService {
     
     public SavingsResult calculate(double initialAmount, double monthlyContribution, 
@@ -57,7 +60,44 @@ public class SavingsCalculatorService {
         double totalInterestEarned = interestBeforeTax - totalTaxPaid;
         
         return new SavingsResult(initialAmount, monthlyContribution, totalContributions, 
-                               totalInterestEarned, totalTaxPaid, totalSaved, years);
+                                totalInterestEarned, totalTaxPaid, totalSaved, years);
+    }
+    
+    public List<YearlySavingsBalance> calculateYearlyBalances(double initialAmount, double monthlyContribution,
+                                                               double annualInterestRatePercent, double taxRatePercent,
+                                                               String periodicity, int years) {
+        List<YearlySavingsBalance> yearlyData = new ArrayList<>();
+        
+        if (years <= 0) {
+            return yearlyData;
+        }
+        
+        boolean isMonthly = "monthly".equalsIgnoreCase(periodicity);
+        double monthlyRate = annualInterestRatePercent / 100.0 / 12.0;
+        double afterTaxMonthlyRate = monthlyRate * (1 - taxRatePercent / 100.0);
+        
+        double balance = initialAmount;
+        
+        if (isMonthly) {
+            for (int year = 1; year <= years; year++) {
+                for (int month = 1; month <= 12; month++) {
+                    double interest = balance * afterTaxMonthlyRate;
+                    balance += interest + monthlyContribution;
+                }
+                yearlyData.add(new YearlySavingsBalance(year, balance));
+            }
+        } else {
+            double annualRate = annualInterestRatePercent / 100.0;
+            double afterTaxAnnualRate = annualRate * (1 - taxRatePercent / 100.0);
+            
+            for (int year = 1; year <= years; year++) {
+                double interest = balance * afterTaxAnnualRate;
+                balance += interest + (monthlyContribution * 12);
+                yearlyData.add(new YearlySavingsBalance(year, balance));
+            }
+        }
+        
+        return yearlyData;
     }
     
     private void validateInputs(double initialAmount, double monthlyContribution, 
@@ -78,4 +118,6 @@ public class SavingsCalculatorService {
             throw new IllegalArgumentException("Years must be greater than 0");
         }
     }
+    
+    public record YearlySavingsBalance(int year, double balance) {}
 }
