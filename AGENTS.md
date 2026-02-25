@@ -467,14 +467,14 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 ### Savings Account (Initial Amount Only, Monthly Compounding)
 - initialAmount: 1,000,000
 - monthlyContribution: 0
-- annualInterestRate: 3%
+- annualInterestRate: 4%
 - taxRate: 15%
 - periodicity: monthly
-- years: 10
+- years: 25
 - totalContributions: 0
-- totalInterestEarned (after tax): 296,950.52
-- totalTaxPaid: 52,403.03
-- totalSaved (final balance): 1,290,112.53
+- totalInterestEarned (after tax): ~1,456,698
+- totalTaxPaid: ~257,065
+- totalSaved (final balance): ~2,336,837
 
 ### Savings Account (With Monthly Contribution)
 - initialAmount: 1,000,000
@@ -494,6 +494,16 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 - Savings API: `/api/savings/calculate`
 - Chart API: `/api/chart/calculate`
 - Chart Compare API: `/api/chart/compare`
+
+## CORS Configuration
+- Global CORS config in `CorsConfig.java` (implements WebMvcConfigurer)
+- Allowed origins: `http://localhost:4200`, `http://63.176.132.107`
+- Do NOT use `@CrossOrigin` on individual controllers
+
+## Frontend Environment Files
+- `src/environments/environment.ts` - Local: `apiUrl: 'http://backend:8080'`
+- `src/environments/environment.prod.ts` - Production: `apiUrl: 'http://63.176.132.107:8080'`
+- Services use: `${environment.apiUrl}/api/...`
 
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed

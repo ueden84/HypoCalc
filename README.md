@@ -165,13 +165,36 @@ Response:
     ]
   },
   "chartData": {
-    "years": [1, 2, 3, ..., 25],
-    "standardBalance": [3936240.95, 3869359.88, ...],
-    "offsetBalance": [2936240.95, 2869359.88, ...],
-    "savingsBalance": [1099990.88, 1203874.18, ...],
-    "yearlyPrincipal": [63759.05, 66881.06, ...],
-    "yearlyInterest": [142312.30, 139190.30, ...]
+    "years": [0, 1, 2, ..., 25],
+    "standardBalance": [4000000, 3936240.95, ...],
+    "offsetBalance": [3000000, 2936240.95, ...],
+    "savingsBalance": [1000000, 1099990.88, ...],
+    "yearlyPrincipal": [0, 63759.05, ...],
+    "yearlyInterest": [0, 142312.30, ...]
   }
+}
+```
+
+### Chart Compare API
+
+**POST** `/api/chart/compare`
+
+Request:
+```json
+{
+  "mortgage": {"principal": 4000000, "annualRatePercent": 4.79, "years": 25, "offsetMode": "reduceAmount", "offsetRatePercent": 4.99},
+  "savings": {"initialAmount": 1000000, "monthlyContribution": 0, "annualInterestRatePercent": 4, "taxRatePercent": 15, "periodicity": "monthly", "years": 25},
+  "offsetAmount": 1000000
+}
+```
+
+Response:
+```json
+{
+  "years": [0, 1, ..., 25],
+  "offsetBenefit": [0, 47437, ...],
+  "savingsBenefit": [0, 29695, ...],
+  "difference": [0, 17742, ...]
 }
 ```
 
@@ -190,6 +213,14 @@ ng serve
 ```bash
 ng build --configuration production
 ```
+
+### Environment Configuration
+
+Frontend uses environment files for API URLs:
+- `src/environments/environment.ts` - Local development
+- `src/environments/environment.prod.ts` - Production (AWS EC2)
+
+Services use: `${environment.apiUrl}/api/...`
 
 ### Run Tests
 

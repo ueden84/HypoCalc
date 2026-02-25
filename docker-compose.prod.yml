@@ -1,0 +1,14 @@
+services:
+  backend:
+    image: ${AWS_ECR_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/mortgage-backend:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+
+  frontend:
+    image: ${AWS_ECR_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/mortgage-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
