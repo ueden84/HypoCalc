@@ -26,6 +26,12 @@ jobs:
       - name: Build backend with Maven
         working-directory: mortgage-backend
         run: mvn -B clean verify
+      
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4 
+        with: 
+          name: backend-jar 
+          path: mortgage-backend/target/*.jar
 
   frontend:
     name: Build Angular Frontend
@@ -48,20 +54,29 @@ jobs:
         working-directory: mortgage-frontend
         run: npm run build --if-present
 
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4 
+        with: 
+          name: frontend-dist 
+          path: mortgage-frontend/dist/
+
   deploy:
     name: Deploy to AWS EC2
     runs-on: ubuntu-latest
     needs: [backend, frontend]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Prepare artifacts
-        run: |
-          mkdir artifacts
-          cp mortgage-backend/target/*.jar artifacts/app.jar
-          cp -r mortgage-frontend/dist/* artifacts/frontend
+      - name: Download backend artifact 
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: artifacts
+          
+      - name: Download frontend artifact 
+        uses: actions/download-artifact@v4 
+        with: 
+          name: frontend-dist 
+          path: artifacts/frontend
 
       - name: Add SSH key
         run: |
