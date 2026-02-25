@@ -52,7 +52,7 @@ jobs:
 
       - name: Build Angular app
         working-directory: mortgage-frontend
-        run: npm run build --if-present
+        run: npm run build -- --configuration production
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4 
