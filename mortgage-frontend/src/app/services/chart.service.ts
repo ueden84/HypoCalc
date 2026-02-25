@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChartRequest, ChartResponse } from '../models/mortgage.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChartService {
-  private apiUrl = '/api/chart/calculate';
+  private readonly apiUrl = `${environment.apiUrl}/api/chart/calculate`;
 
   constructor(private http: HttpClient) {}
 

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { MortgageService } from './mortgage.service';
 import { MortgageRequest, MortgageResult } from '../models/mortgage.model';
+import { environment } from '../../environments/environment';
 
 describe('MortgageService', () => {
   let service: MortgageService;
@@ -41,7 +42,8 @@ describe('MortgageService', () => {
       expect(result).toEqual(mockResult);
     });
 
-    const req = httpMock.expectOne('/api/mortgage/calculate');
+    const expectedUrl = `${environment.apiUrl}/api/mortgage/calculate`;
+    const req = httpMock.expectOne(expectedUrl);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(mockRequest);
     req.flush(mockResult);
