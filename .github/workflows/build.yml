@@ -47,3 +47,39 @@ jobs:
       - name: Build Angular app
         working-directory: mortgage-frontend
         run: npm run build --if-present
+
+  deploy:
+    name: Deploy to AWS EC2
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare artifacts
+        run: |
+          mkdir artifacts
+          cp mortgage-backend/target/*.jar artifacts/app.jar
+          cp -r mortgage-frontend/dist/* artifacts/frontend
+
+      - name: Add SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Copy files to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/app"
+          scp -o StrictHostKeyChecking=no -r artifacts/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/
+
+      - name: Restart backend service
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          "sudo systemctl restart mortgage-backend || sudo systemctl start mortgage-backend"
+
+      - name: Deploy frontend to Nginx
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          "sudo rm -rf /var/www/html/* && sudo cp -r ~/app/frontend/* /var/www/html/"
