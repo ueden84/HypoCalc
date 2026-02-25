@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/chart")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ChartCompareController {
     
     private final ChartCompareUseCase useCase;
