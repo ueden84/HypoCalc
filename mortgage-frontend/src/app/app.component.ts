@@ -27,7 +27,11 @@ import { HttpClientModule } from '@angular/common/http';
         <app-savings-calculator (calculated)="onSavingsCalculated($event)"></app-savings-calculator>
       </div>
       <app-chart *ngIf="chartData" [chartData]="chartData"></app-chart>
-      <app-chart-compare *ngIf="compareChartData" [chartData]="compareChartData"></app-chart-compare>
+      <app-chart-compare *ngIf="compareChartData" 
+        [chartData]="compareChartData"
+        [mortgageRequest]="mortgageRequest"
+        [savingsRequest]="savingsRequest">
+      </app-chart-compare>
     </div>
   `,
   styles: [`
@@ -47,8 +51,8 @@ import { HttpClientModule } from '@angular/common/http';
 export class AppComponent {
   title = 'mortgage-frontend';
   
-  private mortgageRequest: MortgageRequest | null = null;
-  private savingsRequest: SavingsRequest | null = null;
+  mortgageRequest: MortgageRequest | null = null;
+  savingsRequest: SavingsRequest | null = null;
   
   chartData: ChartData | null = null;
   compareChartData: ChartCompareResponse | null = null;

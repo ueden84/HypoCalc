@@ -436,6 +436,46 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 }
 ```
 
+### AI Tips API
+Generates AI-powered financial advice based on mortgage and savings comparison.
+
+**Endpoint**: `POST /api/ai/tips`
+
+**Request Format**:
+```json
+{
+  "mortgage": {
+    "principal": 4000000,
+    "annualRatePercent": 4.79,
+    "years": 25,
+    "offsetAmount": 1000000,
+    "offsetMode": "reduceAmount",
+    "offsetRatePercent": 4.79
+  },
+  "savings": {
+    "initialAmount": 1000000,
+    "monthlyContribution": 5000,
+    "annualInterestRatePercent": 4.5,
+    "taxRatePercent": 15,
+    "periodicity": "monthly",
+    "years": 10
+  },
+  "comparison": {
+    "years": [0, 1, 2, ...],
+    "offsetBenefit": [0, 47437.43, ...],
+    "savingsBenefit": [0, 2295.00, ...],
+    "difference": [0, 45142.43, ...]
+  }
+}
+```
+
+**Response Format**:
+```json
+{
+  "tip": "Based on your numbers, prioritizing the mortgage offset saves you more in the long run..."
+}
+```
+
 ## Sample Calculations
 
 ### Without Offset
@@ -494,6 +534,28 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 - Savings API: `/api/savings/calculate`
 - Chart API: `/api/chart/calculate`
 - Chart Compare API: `/api/chart/compare`
+- AI Tips API: `/api/ai/tips`
+
+## Ollama Setup (for AI Tips)
+The AI Tips feature uses a local Ollama model instead of paid APIs.
+
+**Prerequisites**:
+1. Install Ollama: https://ollama.com
+2. Pull a model: `ollama pull llama3`
+3. Ensure Ollama is running: `ollama serve` (default: http://localhost:11434)
+
+**Configuration** (in `mortgage-backend/src/main/resources/application.yml`):
+```yaml
+langchain4j:
+  ollama:
+    chat-model:
+      base-url: http://host.docker.internal:11434
+      model-name: llama3
+      temperature: 0.2
+      timeout: 10s
+```
+
+**Docker**: The backend service has `extra_hosts` configured to access host's Ollama from container.
 
 ## CORS Configuration
 - Global CORS config in `CorsConfig.java` (implements WebMvcConfigurer)

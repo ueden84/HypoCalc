@@ -87,3 +87,39 @@ export interface ChartCompareResponse {
   savingsBenefit: number[];
   difference: number[];
 }
+
+export interface TipResponse {
+  tip: string;
+}
+
+export interface TipRequest {
+  mortgage: {
+    principal: number;
+    annualRatePercent: number;
+    years: number;
+    offsetAmount: number;
+    offsetMode: string;
+    offsetRatePercent: number;
+  };
+  savings: {
+    initialAmount: number;
+    monthlyContribution: number;
+    annualInterestRatePercent: number;
+    taxRatePercent: number;
+    periodicity: string;
+    years: number;
+  };
+  comparison: {
+    years: number[];
+    offsetBenefit: number[];
+    savingsBenefit: number[];
+    difference: number[];
+    crossoverYear: number;
+    maxOffsetAdvantage: number;
+    maxSavingsAdvantage: number;
+    benefitAtYear1: number;
+    benefitAtYear3: number;
+    benefitAtYear5: number;
+    benefitAtYear10: number;
+  };
+}

@@ -16,4 +16,42 @@
     height: 400px;
     position: relative;
   }
+
+  .tip-container {
+    margin-top: 20px;
+  }
+
+  .tip-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+
+    .loading-text {
+      color: #666;
+      font-size: 14px;
+    }
+  }
+
+  .tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+
+    .tip-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .tip-content {
+      color: #5d4037;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+  }
 }

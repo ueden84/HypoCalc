@@ -1,22 +1,30 @@
-import { Component, Input, OnChanges, SimpleChanges, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, AfterViewInit, ViewChild, ElementRef, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js';
-import { ChartCompareResponse } from '../../models/mortgage.model';
+import { ChartCompareResponse, MortgageRequest, SavingsRequest } from '../../models/mortgage.model';
+import { TipService } from '../../services/tip.service';
 
 @Component({
   selector: 'app-chart-compare',
   standalone: true,
-  imports: [CommonModule, MatCardModule],
+  imports: [CommonModule, MatCardModule, MatProgressBarModule],
   templateUrl: './chart-compare.component.html',
   styleUrls: ['./chart-compare.component.scss']
 })
 export class ChartCompareComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() chartData: ChartCompareResponse | null = null;
+  @Input() mortgageRequest: MortgageRequest | null = null;
+  @Input() savingsRequest: SavingsRequest | null = null;
 
   @ViewChild('compareChartCanvas') compareChartCanvas!: ElementRef<HTMLCanvasElement>;
 
   private compareChart: Chart | null = null;
+  private tipService = inject(TipService);
+
+  tip: string | null = null;
+  tipLoading = false;
 
   constructor() {
     Chart.register(...registerables);
@@ -35,7 +43,90 @@ export class ChartCompareComponent implements OnChanges, AfterViewInit, OnDestro
       } else if (this.compareChartCanvas) {
         this.createChart();
       }
+      this.fetchTip();
     }
+  }
+
+  private fetchTip(): void {
+    if (!this.mortgageRequest || !this.savingsRequest || !this.chartData) {
+      return;
+    }
+
+    this.tipLoading = true;
+    this.tip = null;
+
+    const years = this.chartData.years;
+    const difference = this.chartData.difference;
+    
+    let crossoverYear = -1;
+    for (let i = 1; i < difference.length; i++) {
+      if (difference[i] < 0) {
+        crossoverYear = years[i];
+        break;
+      }
+    }
+    
+    let maxOffsetAdvantage = 0;
+    for (let i = 0; i < difference.length; i++) {
+      if (difference[i] > maxOffsetAdvantage) {
+        maxOffsetAdvantage = difference[i];
+      }
+    }
+    
+    let maxSavingsAdvantage = 0;
+    for (let i = 0; i < difference.length; i++) {
+      if (difference[i] < maxSavingsAdvantage) {
+        maxSavingsAdvantage = difference[i];
+      }
+    }
+    
+    const getBenefitAtYear = (targetYear: number): number => {
+      const index = years.indexOf(targetYear);
+      return index >= 0 ? difference[index] : 0;
+    };
+
+    const tipRequest = {
+      mortgage: {
+        principal: this.mortgageRequest.principal,
+        annualRatePercent: this.mortgageRequest.annualRatePercent,
+        years: this.mortgageRequest.years,
+        offsetAmount: this.mortgageRequest.offsetAmount || 0,
+        offsetMode: this.mortgageRequest.offsetMode || 'reduceAmount',
+        offsetRatePercent: this.mortgageRequest.offsetRatePercent || 0
+      },
+      savings: {
+        initialAmount: this.savingsRequest.initialAmount,
+        monthlyContribution: this.savingsRequest.monthlyContribution,
+        annualInterestRatePercent: this.savingsRequest.annualInterestRatePercent,
+        taxRatePercent: this.savingsRequest.taxRatePercent,
+        periodicity: this.savingsRequest.periodicity,
+        years: this.savingsRequest.years
+      },
+      comparison: {
+        years: this.chartData.years,
+        offsetBenefit: this.chartData.offsetBenefit,
+        savingsBenefit: this.chartData.savingsBenefit,
+        difference: this.chartData.difference,
+        crossoverYear: crossoverYear,
+        maxOffsetAdvantage: maxOffsetAdvantage,
+        maxSavingsAdvantage: maxSavingsAdvantage,
+        benefitAtYear1: getBenefitAtYear(1),
+        benefitAtYear3: getBenefitAtYear(3),
+        benefitAtYear5: getBenefitAtYear(5),
+        benefitAtYear10: getBenefitAtYear(10)
+      }
+    };
+
+    this.tipService.getTip(tipRequest).subscribe({
+      next: (response) => {
+        this.tip = response.tip;
+        this.tipLoading = false;
+      },
+      error: () => {
+        this.tip = 'AI tip is temporarily unavailable. Please try again later.';
+        this.tipLoading = false;
+      }
+    });
   }
 
   ngOnDestroy(): void {

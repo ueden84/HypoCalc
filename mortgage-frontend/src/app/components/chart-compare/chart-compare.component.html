@@ -3,4 +3,14 @@
   <div class="chart-wrapper">
     <canvas id="compareChart"></canvas>
   </div>
+  <div class="tip-container">
+    <div *ngIf="tipLoading" class="tip-loading">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <span class="loading-text">Generating AI tip...</span>
+    </div>
+    <div *ngIf="tip && !tipLoading" class="tip-card">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">{{ tip }}</div>
+    </div>
+  </div>
 </div>
