@@ -437,7 +437,7 @@ Dependency rule: Domain → Application → Infrastructure (dependencies point i
 ```
 
 ### AI Tips API
-Generates AI-powered financial advice based on mortgage and savings comparison.
+Generates AI-powered financial advice about offset vs savings accounts.
 
 **Endpoint**: `POST /api/ai/tips`
 
@@ -464,7 +464,14 @@ Generates AI-powered financial advice based on mortgage and savings comparison.
     "years": [0, 1, 2, ...],
     "offsetBenefit": [0, 47437.43, ...],
     "savingsBenefit": [0, 2295.00, ...],
-    "difference": [0, 45142.43, ...]
+    "difference": [0, 45142.43, ...],
+    "crossoverYear": 12,
+    "maxOffsetAdvantage": 85257,
+    "maxSavingsAdvantage": -50000,
+    "benefitAtYear1": 8607,
+    "benefitAtYear3": 23911,
+    "benefitAtYear5": 37329,
+    "benefitAtYear10": 64699
   }
 }
 ```
@@ -472,9 +479,15 @@ Generates AI-powered financial advice based on mortgage and savings comparison.
 **Response Format**:
 ```json
 {
-  "tip": "Based on your numbers, prioritizing the mortgage offset saves you more in the long run..."
+  "tip": "Keep money in offset account for first 12 years. After year 12 switch to savings. Max offset benefit is 85257 at year 12."
 }
 ```
+
+**Notes**:
+- Positive difference = offset wins, Negative difference = savings wins
+- `crossoverYear`: First year when savings becomes better (negative difference). If -1, offset always wins.
+- AI tip is shown only in local development (`environment.production === false`)
+- Tip is limited to 300 characters, no $ symbols or markdown
 
 ## Sample Calculations
 
@@ -563,9 +576,21 @@ langchain4j:
 - Do NOT use `@CrossOrigin` on individual controllers
 
 ## Frontend Environment Files
-- `src/environments/environment.ts` - Local: `apiUrl: 'http://backend:8080'`
+- `src/environments/environment.ts` - Local: `apiUrl: ''` (uses nginx proxy)
 - `src/environments/environment.prod.ts` - Production: `apiUrl: 'http://63.176.132.107:8080'`
 - Services use: `${environment.apiUrl}/api/...`
+
+## Build Configurations
+
+### Local Development (Docker)
+- Uses Dockerfile which runs: `npm run build -- --configuration=development`
+- Environment: `environment.ts` (`production: false`)
+- AI tips are shown (Ollama available locally)
+
+### Production (GitHub Actions)
+- Uses `.github/workflows/build.yml` which runs: `npm run build -- --configuration production`
+- Environment: `environment.prod.ts` (`production: true`)
+- AI tips are hidden (Ollama not available)
 
 ## Dependencies to Avoid Adding
 - **Backend**: No Lombok (use records), avoid Spring Data JPA unless persistence needed

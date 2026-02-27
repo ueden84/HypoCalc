@@ -23,7 +23,7 @@ public class TipController {
             String tip = tipAiService.generateTip(request);
             return ResponseEntity.ok(new TipResponse(tip));
         } catch (Exception e) {
-            return ResponseEntity.ok(new TipResponse("AI tip is temporarily unavailable. Please try again later." + e));
+            return ResponseEntity.ok(new TipResponse("AI tip is temporarily unavailable. Please try again later."));
         }
     }
 }
